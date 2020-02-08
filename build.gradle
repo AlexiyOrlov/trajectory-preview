@@ -1,0 +1,109 @@
+buildscript {
+    repositories {
+        maven { url = 'https://files.minecraftforge.net/maven' }
+        jcenter()
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+    }
+}
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'maven-publish'
+group 'io.github.alexiyorlov'
+version = '1.0.1+1.14.4'
+
+sourceCompatibility = targetCompatibility= 1.8
+
+minecraft {
+    // The mappings can be changed at any time, and must be in the following format.
+    // snapshot_YYYYMMDD   Snapshot are built nightly.
+    // stable_#            Stables are built at the discretion of the MCP team.
+    // Use non-default mappings at your own risk. they may not always work.
+    // Simply re-run your setup task after changing the mappings to update your workspace.
+    mappings channel: 'snapshot', version: '20191125-1.14.3'
+    // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
+
+    // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+
+    // Default run configurations.
+    // These can be tweaked, removed, or duplicated as needed.
+    runs {
+        client {
+            workingDirectory project.file('run')
+
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES'
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'info'
+
+            mods {
+                trajectory_preview {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        server {
+            workingDirectory project.file('server')
+
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES'
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'info'
+
+            mods {
+                trajectory_preview
+                        {
+                            source sourceSets.main
+                        }
+            }
+        }
+
+        data {
+            workingDirectory project.file('rundata')
+
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES'
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'info'
+
+            args '--mod', 'trajectory_preview', '--all', '--output', file('src/generated/resources/')
+
+            mods {
+                trajectory_preview
+                        {
+                            source sourceSets.main
+                        }
+            }
+        }
+    }
+}
+
+processResources{
+    from(sourceSets.main.resources.srcDirs){
+        include('META-INF/mods.toml')
+        expand(version: project.version)
+    }
+}
+
+dependencies {
+    minecraft 'net.minecraftforge:forge:1.14.4-28.1.108'
+}
+
+jar {
+    manifest {
+        attributes([
+//                "Specification-Title": "examplemod",
+                "Specification-Vendor": "Alexiy",
+//                "Specification-Version": "1", // We are version 1 of ourselves
+                "Implementation-Title": project.name,
+                "Implementation-Version": "${version}",
+                                "Implementation-Vendor" :"Alexiy",
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
+}
