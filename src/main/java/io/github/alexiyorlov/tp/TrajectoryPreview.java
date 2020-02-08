@@ -34,9 +34,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.client.config.GuiButtonExt;
-import net.minecraftforge.fml.client.gui.GuiModList;
-import net.minecraftforge.fml.client.gui.GuiSlotModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -142,7 +139,7 @@ public class TrajectoryPreview
                         if (target != null)
                         {
                             Entity e = (Entity) entity;
-                            e.setPosition(target.posX, target.posY, target.posZ);
+                            e.setPosition(target.getPosX(), target.getPosY(), target.getPosZ());
                             e.setMotion(target.getMotion());
                             e.rotationYaw = target.rotationYaw;
                             e.rotationPitch = target.rotationPitch;
@@ -159,7 +156,7 @@ public class TrajectoryPreview
                                 {
                                     break;
                                 }
-                                Vec3d newPoint=new Vec3d(e.posX, e.posY, e.posZ);
+                                Vec3d newPoint=new Vec3d(e.getPosX(), e.getPosY(), e.getPosZ());
                                 if(MathHelper.sqrt(playerEntity.getDistanceSq(newPoint))>pathStart.get())
                                 {
                                     trajectory.add(newPoint);
@@ -203,41 +200,6 @@ public class TrajectoryPreview
         }
     }
 
-//    @SubscribeEvent
-    @Deprecated
-    public static void openConfig(GuiScreenEvent.MouseClickedEvent.Post mouseClickedEvent)
-    {
-        if(mouseClickedEvent.getGui() instanceof GuiModList)
-        {
-            GuiModList modList= (GuiModList) mouseClickedEvent.getGui();
-            try
-            {
-                Field field=GuiModList.class.getDeclaredField("configButton");
-                field.setAccessible(true);
-                Button config= (Button) field.get(modList);
-                Field f=GuiModList.class.getDeclaredField("selected");
-                f.setAccessible(true);
-                Object modEntry=f.get(modList);
-//                modList.setSelected(modEntry);
-                if(modEntry!=null)
-                {
-                    Method method = modEntry.getClass().getMethod("getInfo");
-                    method.setAccessible(true);
-                    ModInfo getInfo = (ModInfo) method.invoke(modEntry);
-                    if (getInfo != null && getInfo.getModId().equals(ID))
-                    {
-                        config.active = true;
-                        config.mouseClicked(mouseClickedEvent.getMouseX(), mouseClickedEvent.getMouseY(), mouseClickedEvent.getButton());
-//                    config.onPress();
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }
-        }
-    }
 
     @SubscribeEvent
     public void onSetup(FMLClientSetupEvent clientSetupEvent)

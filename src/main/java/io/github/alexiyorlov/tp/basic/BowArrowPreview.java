@@ -69,7 +69,7 @@ public class BowArrowPreview extends Entity implements PreviewEntity<AbstractArr
             this.prevRotationPitch = this.rotationPitch;
         }
 
-        BlockPos blockpos = new BlockPos(this.posX, this.posY, this.posZ);
+        BlockPos blockpos = new BlockPos(this.getPosX(), this.getPosY(), this.getPosZ());
         BlockState iblockstate = this.world.getBlockState(blockpos);
 
         if (!iblockstate.isAir(this.world, blockpos))
@@ -79,7 +79,7 @@ public class BowArrowPreview extends Entity implements PreviewEntity<AbstractArr
             {
                 for (AxisAlignedBB axisalignedbb : voxelshape.toBoundingBoxList())
                 {
-                    if (axisalignedbb.offset(blockpos).contains(new Vec3d(this.posX, this.posY, this.posZ)))
+                    if (axisalignedbb.offset(blockpos).contains(new Vec3d(this.getPosX(), this.getPosY(), this.getPosZ())))
                     {
                         this.inGround = true;
                         break;
@@ -96,12 +96,12 @@ public class BowArrowPreview extends Entity implements PreviewEntity<AbstractArr
         }
         else
         {
-            Vec3d vec3d1 = new Vec3d(this.posX, this.posY, this.posZ);
-            Vec3d vec3d = new Vec3d(this.posX, this.posY, this.posZ).add(motion);
+            Vec3d vec3d1 = new Vec3d(this.getPosX(), this.getPosY(), this.getPosZ());
+            Vec3d vec3d = new Vec3d(this.getPosX(), this.getPosY(), this.getPosZ()).add(motion);
             BlockRayTraceResult raytraceresult = this.world.rayTraceBlocks(new RayTraceContext(vec3d1, vec3d, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, this));
 
-            vec3d1 = new Vec3d(this.posX, this.posY, this.posZ);
-            vec3d = new Vec3d(this.posX + motion.x, this.posY + motion.y, this.posZ + motion.z);
+            vec3d1 = new Vec3d(this.getPosX(), this.getPosY(), this.getPosZ());
+            vec3d = new Vec3d(this.getPosX() + motion.x, this.getPosY() + motion.y, this.getPosZ() + motion.z);
 
             if (raytraceresult.getType() != RayTraceResult.Type.MISS)
             {
@@ -131,9 +131,10 @@ public class BowArrowPreview extends Entity implements PreviewEntity<AbstractArr
             }
 
 
-            this.posX += motion.x;
-            this.posY += motion.y;
-            this.posZ += motion.z;
+//            this.posX += motion.x;
+//            this.posY += motion.y;
+//            this.posZ += motion.z;
+            addVelocity(motion.x,motion.y,motion.z);
             float f4 = MathHelper.sqrt(value);
             this.rotationYaw = (float) (MathHelper.atan2(motion.x, motion.z) * (180D / Math.PI));
 
@@ -174,7 +175,7 @@ public class BowArrowPreview extends Entity implements PreviewEntity<AbstractArr
                 addVelocity(0, -0.05000000074505806D, 0);
             }
 
-//            this.setPosition(this.posX, this.posY, this.posZ);
+//            this.setPosition(this.posX, this.getPosY(), this.getPosZ());
             this.doBlockCollisions();
         }
 

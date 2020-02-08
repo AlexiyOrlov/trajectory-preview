@@ -68,9 +68,9 @@ public class ThrowablePreview extends Entity implements PreviewEntity<ThrowableE
     @Override
     public void simulateShot(ThrowableEntity simulatedEntity)
     {
-        this.lastTickPosX = this.posX;
-        this.lastTickPosY = this.posY;
-        this.lastTickPosZ = this.posZ;
+        this.lastTickPosX = this.getPosX();
+        this.lastTickPosY = this.getPosY();
+        this.lastTickPosZ = this.getPosZ();
         super.tick();
 
         if (this.inGround)
@@ -108,9 +108,10 @@ public class ThrowablePreview extends Entity implements PreviewEntity<ThrowableE
         }
 
         Vec3d vec3d = this.getMotion();
-        this.posX += vec3d.x;
-        this.posY += vec3d.y;
-        this.posZ += vec3d.z;
+//        this.posX += vec3d.x;
+//        this.posY += vec3d.y;
+//        this.posZ += vec3d.z;
+        addVelocity(vec3d.x,vec3d.y,vec3d.z);
         float f = MathHelper.sqrt(horizontalMag(vec3d));
         this.rotationYaw = (float) (MathHelper.atan2(vec3d.x, vec3d.z) * (double) (180F / (float) Math.PI));
 
@@ -158,7 +159,7 @@ public class ThrowablePreview extends Entity implements PreviewEntity<ThrowableE
             this.setMotion(vec3d1.x, vec3d1.y - yy, vec3d1.z);
         }
 
-        this.setPosition(this.posX, this.posY, this.posZ);
+        this.setPosition(this.getPosX(), this.getPosY(), this.getPosZ());
     }
 
     @Override

@@ -88,12 +88,12 @@ public class CrossbowProjectilePreview extends Entity implements PreviewEntity<A
                 if (allProjectiles.size() == 1 && allProjectiles.get(0).getItem() instanceof ArrowItem)
                 {
                     AbstractArrowEntity abstractArrowEntity = createArrow(world, player, associatedItem, new ItemStack(Items.ARROW));
-                    Vec3d vec3d1 = player.func_213286_i(1.0F);
+                    Vec3d vec3d1 = player.getLook(1.0F);
                     //0, -10, 10 for all projectiles
                     Quaternion quaternion = new Quaternion(new Vector3f(vec3d1), 0, true);
                     Vec3d vec3d = player.getLook(1.0F);
                     Vector3f vector3f = new Vector3f(vec3d);
-                    vector3f.func_214905_a(quaternion);
+                    vector3f.transform(quaternion);
                     float velocity = 3.15f;
 //                1.6F for firework rocket; 3.15F for arrow
                     abstractArrowEntity.shoot(vector3f.getX(), vector3f.getY(), vector3f.getZ(), velocity, 0);
@@ -119,7 +119,7 @@ public class CrossbowProjectilePreview extends Entity implements PreviewEntity<A
             this.prevRotationPitch = this.rotationPitch;
         }
 
-        BlockPos blockpos = new BlockPos(this.posX, this.posY, this.posZ);
+        BlockPos blockpos = new BlockPos(this.getPosX(), this.getPosY(), this.getPosZ());
         BlockState blockstate = this.world.getBlockState(blockpos);
         if (!blockstate.isAir(this.world, blockpos) && !flag)
         {
@@ -128,7 +128,7 @@ public class CrossbowProjectilePreview extends Entity implements PreviewEntity<A
             {
                 for (AxisAlignedBB axisalignedbb : voxelshape.toBoundingBoxList())
                 {
-                    if (axisalignedbb.offset(blockpos).contains(new Vec3d(this.posX, this.posY, this.posZ)))
+                    if (axisalignedbb.offset(blockpos).contains(new Vec3d(this.getPosX(), this.getPosY(), this.getPosZ())))
                     {
                         remove();
                         return;
@@ -162,7 +162,7 @@ public class CrossbowProjectilePreview extends Entity implements PreviewEntity<A
 
 //            this.timeInGround = 0;
 //            ++this.ticksInAir;
-            Vec3d vec3d1 = new Vec3d(this.posX, this.posY, this.posZ);
+            Vec3d vec3d1 = new Vec3d(this.getPosX(), this.getPosY(), this.getPosZ());
             Vec3d vec3d2 = vec3d1.add(vec3d);
             RayTraceResult raytraceresult = this.world.rayTraceBlocks(new RayTraceContext(vec3d1, vec3d2, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, this));
             if (raytraceresult.getType() != RayTraceResult.Type.MISS)
@@ -215,9 +215,10 @@ public class CrossbowProjectilePreview extends Entity implements PreviewEntity<A
 //                }
 //            }
 
-            this.posX += d1;
-            this.posY += d2;
-            this.posZ += d0;
+//            this.posX += d1;
+//            this.posY += d2;
+//            this.posZ += d0;
+            addVelocity(d1,d2,d0);
             float f4 = MathHelper.sqrt(horizontalMag(vec3d));
             if (flag)
             {
@@ -228,9 +229,6 @@ public class CrossbowProjectilePreview extends Entity implements PreviewEntity<A
                 this.rotationYaw = (float) (MathHelper.atan2(d1, d0) * (double) (180F / (float) Math.PI));
             }
 
-//            for(this.rotationPitch = (float)(MathHelper.atan2(d2, (double)f4) * (double)(180F / (float)Math.PI)); this.rotationPitch - this.prevRotationPitch < -180.0F; this.prevRotationPitch -= 360.0F) {
-//                ;
-//            }
 
             while (this.rotationPitch - this.prevRotationPitch >= 180.0F)
             {
@@ -267,7 +265,7 @@ public class CrossbowProjectilePreview extends Entity implements PreviewEntity<A
                 this.setMotion(vec3d3.x, vec3d3.y - (double) 0.05F, vec3d3.z);
             }
 
-            this.setPosition(this.posX, this.posY, this.posZ);
+            this.setPosition(this.getPosX(), this.getPosY(), this.getPosZ());
             this.doBlockCollisions();
         }
 

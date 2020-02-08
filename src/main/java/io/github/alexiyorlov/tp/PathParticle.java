@@ -1,5 +1,6 @@
 package io.github.alexiyorlov.tp;
 
+import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.client.particle.IParticleFactory;
 import net.minecraft.client.particle.IParticleRenderType;
 import net.minecraft.client.particle.Particle;
@@ -23,21 +24,12 @@ public class PathParticle extends Particle
         canCollide = false;
     }
 
-//    @Override
-//    public void renderParticle(BufferBuilder buffer, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
-//        super.renderParticle(buffer, entityIn, partialTicks, rotationX, rotationZ, rotationYZ, rotationXY, rotationXZ);
-//        renderParticle();
-//        setExpired();
-//    }
-
     @Override
-    public void renderParticle(BufferBuilder buffer, ActiveRenderInfo entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ)
+    public void renderParticle(IVertexBuilder buffer, ActiveRenderInfo renderInfo, float partialTicks)
     {
-        System.out.println(buffer.getVertexFormat());
         buffer.pos(posX, posY, posZ).color(particleRed, particleGreen, particleBlue, particleAlpha).endVertex();
-//        setExpired();
-    }
 
+    }
 
     @Override
     public IParticleRenderType getRenderType()

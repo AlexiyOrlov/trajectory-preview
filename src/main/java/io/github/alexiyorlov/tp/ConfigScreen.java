@@ -4,8 +4,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.fml.client.config.GuiButtonExt;
-import net.minecraftforge.fml.client.config.GuiUtils;
+import net.minecraftforge.fml.client.gui.widget.ExtendedButton;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -58,7 +57,7 @@ public class ConfigScreen extends Screen
         addButton(startpathfrom);
         startpathfrom.setValidator(s-> s.isEmpty() || StringUtils.isNumeric(s));
         i+=20;
-        this.addButton(new GuiButtonExt(width/2,height-30,100,20,"Save", p_onPress_1_ -> {
+        this.addButton(new ExtendedButton(width/2,height-30,100,20,"Save", p_onPress_1_ -> {
             try
             {
                 TrajectoryPreview.primaryDotColor.set(primaryDotColor.getText());
