@@ -11,7 +11,7 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'maven-publish'
 group 'io.github.alexiyorlov'
-version = '1.0.1+1.14.4'
+version = '2.0.0+1.15.2'
 
 sourceCompatibility = targetCompatibility= 1.8
 

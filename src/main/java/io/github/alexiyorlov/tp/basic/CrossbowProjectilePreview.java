@@ -137,31 +137,8 @@ public class CrossbowProjectilePreview extends Entity implements PreviewEntity<A
             }
         }
 
-//        if (this.arrowShake > 0) {
-//            --this.arrowShake;
-//        }
 
-//        if (this.isWet()) {
-//            this.extinguish();
-//        }
 
-//        if (this.inGround && !flag) {
-//            if (this.inBlockState != blockstate && this.world.areCollisionShapesEmpty(this.getBoundingBox().grow(0.06D))) {
-//                this.inGround = false;
-//                this.setMotion(vec3d.mul((double)(this.rand.nextFloat() * 0.2F), (double)(this.rand.nextFloat() * 0.2F), (double)(this.rand.nextFloat() * 0.2F)));
-//                this.ticksInGround = 0;
-//                this.ticksInAir = 0;
-//            } else if (!this.world.isRemote) {
-//                this.tryDespawn();
-//            }
-//
-//            ++this.timeInGround;
-//        }
-//        else
-        {
-
-//            this.timeInGround = 0;
-//            ++this.ticksInAir;
             Vec3d vec3d1 = new Vec3d(this.getPosX(), this.getPosY(), this.getPosZ());
             Vec3d vec3d2 = vec3d1.add(vec3d);
             RayTraceResult raytraceresult = this.world.rayTraceBlocks(new RayTraceContext(vec3d1, vec3d2, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, this));
@@ -173,8 +150,7 @@ public class CrossbowProjectilePreview extends Entity implements PreviewEntity<A
             while (isAlive())
             {
                 EntityRayTraceResult entityraytraceresult = ProjectileHelper.rayTraceEntities(this.world, this, vec3d, vec3d2, simulatedEntity.getBoundingBox().expand(this.getMotion()).grow(1.0D), (p_213871_1_) -> !p_213871_1_.isSpectator() && p_213871_1_.isAlive() && p_213871_1_.canBeCollidedWith() && (p_213871_1_ != simulatedEntity.getShooter())); /*|| simulatedEntity.ticksInAir >= 5) && (simulatedEntity.piercedEntities == null || !simulatedEntity.piercedEntities.contains(p_213871_1_.getEntityId())))*/
-                ;
-                //simulatedEntity.rayTraceEntities(vec3d1, vec3d2);
+
                 if (entityraytraceresult != null)
                 {
                     raytraceresult = entityraytraceresult;
@@ -214,11 +190,8 @@ public class CrossbowProjectilePreview extends Entity implements PreviewEntity<A
 //                    this.world.addParticle(ParticleTypes.CRIT, this.posX + d1 * (double)i / 4.0D, this.posY + d2 * (double)i / 4.0D, this.posZ + d0 * (double)i / 4.0D, -d1, -d2 + 0.2D, -d0);
 //                }
 //            }
+            this.setPosition(this.getPosX()+d1, this.getPosY()+d2, this.getPosZ()+d0);
 
-//            this.posX += d1;
-//            this.posY += d2;
-//            this.posZ += d0;
-            addVelocity(d1,d2,d0);
             float f4 = MathHelper.sqrt(horizontalMag(vec3d));
             if (flag)
             {
@@ -248,7 +221,6 @@ public class CrossbowProjectilePreview extends Entity implements PreviewEntity<A
             this.rotationPitch = MathHelper.lerp(0.2F, this.prevRotationPitch, this.rotationPitch);
             this.rotationYaw = MathHelper.lerp(0.2F, this.prevRotationYaw, this.rotationYaw);
             float f1 = 0.99F;
-//            float f2 = 0.05F;
             if (this.isInWater())
             {
 //                for(int j = 0; j < 4; ++j) {
@@ -265,9 +237,7 @@ public class CrossbowProjectilePreview extends Entity implements PreviewEntity<A
                 this.setMotion(vec3d3.x, vec3d3.y - (double) 0.05F, vec3d3.z);
             }
 
-            this.setPosition(this.getPosX(), this.getPosY(), this.getPosZ());
             this.doBlockCollisions();
-        }
 
     }
 

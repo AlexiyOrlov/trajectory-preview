@@ -130,11 +130,8 @@ public class BowArrowPreview extends Entity implements PreviewEntity<AbstractArr
                 remove();
             }
 
+            this.setPosition(this.getPosX()+motion.x, this.getPosY()+motion.y, this.getPosZ()+motion.z);
 
-//            this.posX += motion.x;
-//            this.posY += motion.y;
-//            this.posZ += motion.z;
-            addVelocity(motion.x,motion.y,motion.z);
             float f4 = MathHelper.sqrt(value);
             this.rotationYaw = (float) (MathHelper.atan2(motion.x, motion.z) * (180D / Math.PI));
 
@@ -175,7 +172,6 @@ public class BowArrowPreview extends Entity implements PreviewEntity<AbstractArr
                 addVelocity(0, -0.05000000074505806D, 0);
             }
 
-//            this.setPosition(this.posX, this.getPosY(), this.getPosZ());
             this.doBlockCollisions();
         }
 

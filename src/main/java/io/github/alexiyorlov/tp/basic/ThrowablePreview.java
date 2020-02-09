@@ -108,10 +108,8 @@ public class ThrowablePreview extends Entity implements PreviewEntity<ThrowableE
         }
 
         Vec3d vec3d = this.getMotion();
-//        this.posX += vec3d.x;
-//        this.posY += vec3d.y;
-//        this.posZ += vec3d.z;
-        addVelocity(vec3d.x,vec3d.y,vec3d.z);
+
+        this.setPosition(this.getPosX()+vec3d.x, this.getPosY()+vec3d.y, this.getPosZ()+vec3d.z);
         float f = MathHelper.sqrt(horizontalMag(vec3d));
         this.rotationYaw = (float) (MathHelper.atan2(vec3d.x, vec3d.z) * (double) (180F / (float) Math.PI));
 
@@ -159,7 +157,6 @@ public class ThrowablePreview extends Entity implements PreviewEntity<ThrowableE
             this.setMotion(vec3d1.x, vec3d1.y - yy, vec3d1.z);
         }
 
-        this.setPosition(this.getPosX(), this.getPosY(), this.getPosZ());
     }
 
     @Override

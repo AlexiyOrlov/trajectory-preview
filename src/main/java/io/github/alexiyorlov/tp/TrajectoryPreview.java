@@ -134,7 +134,6 @@ public class TrajectoryPreview
                     try
                     {
                         PreviewEntity<Entity> entity = previewEntity.getConstructor(World.class).newInstance(world);
-//                        PreviewEntity<Entity> preview= (PreviewEntity<Entity>) entity;
                         Entity target = entity.initializeEntity(playerEntity, itemStack);
                         if (target != null)
                         {
