@@ -68,12 +68,6 @@ public class CrossbowProjectilePreview extends Entity implements PreviewEntity<A
 
         abstractarrowentity.setHitSound(SoundEvents.ITEM_CROSSBOW_HIT);
         abstractarrowentity.setShotFromCrossbow(true);
-        int i = EnchantmentHelper.getEnchantmentLevel(Enchantments.PIERCING, crossbow);
-        if (i > 0)
-        {
-            abstractarrowentity.setPierceLevel((byte) i);
-        }
-
         return abstractarrowentity;
     }
 
