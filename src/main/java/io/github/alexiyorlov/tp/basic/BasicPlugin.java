@@ -23,11 +23,9 @@ public class BasicPlugin implements PreviewProvider
             return BowArrowPreview.class;
         }
         else if (shootable == Items.SNOWBALL || shootable == Items.ENDER_PEARL || shootable == Items.EGG ||
-                shootable == Items.SPLASH_POTION || shootable == Items.LINGERING_POTION)
-        {
+                shootable == Items.SPLASH_POTION || shootable == Items.LINGERING_POTION) {
             return ThrowablePreview.class;
-        }
-        else if (shootable == Items.CROSSBOW) {
+        } else if (shootable == Items.CROSSBOW) {
             return CrossbowProjectilePreview.class;
         } else if (shootable == Items.TRIDENT)
             return TridentPreview.class;
