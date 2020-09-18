@@ -11,12 +11,12 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'maven-publish'
 group 'io.github.alexiyorlov'
-version = '2.0.1+1.15.2'
+version = '2.0.2+1.15.2'
 
 sourceCompatibility = targetCompatibility= 1.8
 
 minecraft {
-    mappings channel: 'snapshot', version: '20200206-1.15.1'
+    mappings channel: 'snapshot', version: "${property('mappings_version')}-1.15.1"
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 
     // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
@@ -28,7 +28,7 @@ minecraft {
             workingDirectory project.file('run')
 
             // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', 'SCAN,REGISTRIES'
+            property 'forge.logging.markers', ''
 
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'info'
@@ -44,7 +44,7 @@ minecraft {
             workingDirectory project.file('server')
 
             // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', 'SCAN,REGISTRIES'
+            property 'forge.logging.markers', ''
 
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'info'
@@ -62,12 +62,12 @@ minecraft {
 processResources{
     from(sourceSets.main.resources.srcDirs){
         include('META-INF/mods.toml')
-        expand(version: project.version)
+        expand(version: version)
     }
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.15.2-31.1.0'
+    minecraft "net.minecraftforge:forge:${property('forge_version')}"
 }
 
 jar {
