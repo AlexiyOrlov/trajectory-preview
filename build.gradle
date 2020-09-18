@@ -62,6 +62,7 @@ minecraft {
 processResources{
     from(sourceSets.main.resources.srcDirs){
         include('META-INF/mods.toml')
+        //check the cached file for correct version
         expand(version: version)
     }
 }
