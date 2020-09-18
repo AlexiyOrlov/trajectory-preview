@@ -46,6 +46,7 @@ public class BowArrowPreview extends Entity implements PreviewEntity<AbstractArr
             if (arrowVelocity >= 0.1)
             {
                 ArrowEntity entityArrow = new ArrowEntity(world, player);
+                //inaccuracy always 0
                 entityArrow.shoot(player, player.rotationPitch, player.rotationYaw, 0, 3 * arrowVelocity, 0);
                 shooter = player;
                 return entityArrow;
@@ -54,14 +55,19 @@ public class BowArrowPreview extends Entity implements PreviewEntity<AbstractArr
         return null;
     }
 
+    /**
+     * @return motion modifier in water
+     */
+    protected float waterDrag() {
+        return 0.6f;
+    }
+
     @Override
-    public void simulateShot(AbstractArrowEntity simulatedEntity)
-    {
+    public void simulateShot(AbstractArrowEntity simulatedEntity) {
         super.tick();
         final Vec3d motion = getMotion();
         double value = motion.x * motion.x + motion.z * motion.z;
-        if (this.prevRotationPitch == 0.0F && this.prevRotationYaw == 0.0F)
-        {
+        if (this.prevRotationPitch == 0.0F && this.prevRotationYaw == 0.0F) {
             float f = MathHelper.sqrt(value);
             this.rotationYaw = (float) (MathHelper.atan2(motion.x, motion.z) * (180D / Math.PI));
             this.rotationPitch = (float) (MathHelper.atan2(motion.y, f) * (180D / Math.PI));
@@ -162,7 +168,7 @@ public class BowArrowPreview extends Entity implements PreviewEntity<AbstractArr
             if (this.isInWater())
             {
 
-                f1 = 0.6F;
+                f1 = waterDrag();
             }
 
             setMotion(motion.x * f1, motion.y * f1, motion.z * f1);
@@ -217,7 +223,6 @@ public class BowArrowPreview extends Entity implements PreviewEntity<AbstractArr
     @Override
     public IPacket<?> createSpawnPacket()
     {
-//        Entity entity = this.getShooter();
         return new SSpawnObjectPacket(this);
     }
 

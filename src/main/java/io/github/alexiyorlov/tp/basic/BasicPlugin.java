@@ -27,10 +27,10 @@ public class BasicPlugin implements PreviewProvider
         {
             return ThrowablePreview.class;
         }
-        else if (shootable == Items.CROSSBOW)
-        {
+        else if (shootable == Items.CROSSBOW) {
             return CrossbowProjectilePreview.class;
-        }
+        } else if (shootable == Items.TRIDENT)
+            return TridentPreview.class;
         return null;
     }
 }
