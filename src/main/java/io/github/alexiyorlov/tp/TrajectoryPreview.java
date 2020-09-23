@@ -177,7 +177,7 @@ public class TrajectoryPreview
                                     {
                                         point.setColor(color2.getRed() / 255f, color2.getGreen() / 255f, color2.getBlue() / 255f);
                                     }
-                                    point.multipleParticleScaleBy(pointScale);
+                                    point.multiplyParticleScaleBy(pointScale);
                                     point.setExpired();
                                 }
                             }
