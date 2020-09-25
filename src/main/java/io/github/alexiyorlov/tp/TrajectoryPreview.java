@@ -77,7 +77,6 @@ public class TrajectoryPreview
                 .filter(a -> type.equals(a.getAnnotationType()))
                 .collect(Collectors.toSet());
         list.forEach(annotationData -> {
-//             System.out.println(annotationData.getClassType().getClassName());
             try
             {
                 Class<?> plugin = Class.forName(annotationData.getClassType().getClassName());
