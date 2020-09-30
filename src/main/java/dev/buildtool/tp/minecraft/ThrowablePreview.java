@@ -18,6 +18,9 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Created on 2/25/18.
  */
@@ -32,7 +35,7 @@ public class ThrowablePreview extends Entity implements PreviewEntity<ThrowableE
     }
 
     @Override
-    public ThrowableEntity initializeEntity(PlayerEntity player, ItemStack associatedItem)
+    public List<ThrowableEntity> initializeEntities(PlayerEntity player, ItemStack associatedItem)
     {
         Item item = associatedItem.getItem();
         if (item == Items.SNOWBALL)
@@ -40,28 +43,28 @@ public class ThrowablePreview extends Entity implements PreviewEntity<ThrowableE
             shooter = player;
             SnowballEntity entitySnowball = new SnowballEntity(world, player);
             entitySnowball.func_234612_a_(player, player.rotationPitch, player.rotationYaw, 0, 1.5f, 0);
-            return entitySnowball;
+            return Collections.singletonList(entitySnowball);
         }
         else if (item == Items.EGG)
         {
             shooter = player;
             EggEntity entityEgg = new EggEntity(world, player);
             entityEgg.func_234612_a_(player, player.rotationPitch, player.rotationYaw, 0, 1.5f, 0);
-            return entityEgg;
+            return Collections.singletonList(entityEgg);
         }
         else if (item == Items.ENDER_PEARL)
         {
             EnderPearlEntity entityEnderPearl = new EnderPearlEntity(world, player);
             shooter = player;
             entityEnderPearl.func_234612_a_(player, player.rotationPitch, player.rotationYaw, 0, 1.5f, 0);
-            return entityEnderPearl;
+            return Collections.singletonList(entityEnderPearl);
         }
         else if (item == Items.SPLASH_POTION || item == Items.LINGERING_POTION)
         {
             PotionEntity potionEntity = new PotionEntity(world, player);
             shooter = player;
             potionEntity.func_234612_a_(player, player.rotationPitch, player.rotationYaw, -20, 0.5f, 0);
-            return potionEntity;
+            return Collections.singletonList(potionEntity);
         }
         return null;
     }

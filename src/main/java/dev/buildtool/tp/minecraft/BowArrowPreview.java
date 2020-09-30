@@ -18,6 +18,7 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,7 +35,7 @@ public class BowArrowPreview extends Entity implements PreviewEntity<AbstractArr
     }
 
     @Override
-    public AbstractArrowEntity initializeEntity(PlayerEntity player, ItemStack associatedItem)
+    public List<AbstractArrowEntity> initializeEntities(PlayerEntity player, ItemStack associatedItem)
     {
         int timeleft = player.getItemInUseCount();
         if (timeleft > 0)
@@ -48,7 +49,7 @@ public class BowArrowPreview extends Entity implements PreviewEntity<AbstractArr
                 //inaccuracy always 0
                 entityArrow.func_234612_a_(player, player.rotationPitch, player.rotationYaw, 0, 3 * arrowVelocity, 0);
                 shooter = player;
-                return entityArrow;
+                return Collections.singletonList(entityArrow);
             }
         }
         return null;

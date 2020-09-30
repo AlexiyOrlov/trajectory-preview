@@ -33,10 +33,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.objectweb.asm.Type;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -122,58 +119,54 @@ public class TrajectoryPreview
                     try
                     {
                         PreviewEntity<Entity> entity = previewEntity.getConstructor(World.class).newInstance(world);
-                        Entity target = entity.initializeEntity(playerEntity, itemStack);
-                        if (target != null)
+                        List<Entity> targets = entity.initializeEntities(playerEntity, itemStack);
+//                        Entity target = entity.initializeEntities(playerEntity, itemStack);
+                        if (targets != null)
                         {
-                            Entity e = (Entity) entity;
-                            e.setPosition(target.getPosX(), target.getPosY(), target.getPosZ());
-                            e.setMotion(target.getMotion());
-                            e.rotationYaw = target.rotationYaw;
-                            e.rotationPitch = target.rotationPitch;
-                            e.prevRotationPitch = target.prevRotationPitch;
-                            e.prevRotationYaw = target.prevRotationYaw;
+                            for (Entity target : targets) {
+                                entity = previewEntity.getConstructor(World.class).newInstance(world);
+                                Entity e = (Entity) entity;
+                                e.setPosition(target.getPosX(), target.getPosY(), target.getPosZ());
+                                e.setMotion(target.getMotion());
+                                e.rotationYaw = target.rotationYaw;
+                                e.rotationPitch = target.rotationPitch;
+                                e.prevRotationPitch = target.prevRotationPitch;
+                                e.prevRotationYaw = target.prevRotationYaw;
 
-                            world.addEntity(e);
-                            ArrayList<Vector3d> trajectory = new ArrayList<>(128);
-                            short cycle = 0;
-                            while (e.isAlive())
-                            {
-                                entity.simulateShot(target);
-                                if (cycle > 512)
-                                {
-                                    break;
+                                world.addEntity(e);
+                                ArrayList<Vector3d> trajectory = new ArrayList<>(128);
+                                short cycle = 0;
+                                while (e.isAlive()) {
+                                    entity.simulateShot(target);
+                                    if (cycle > 512) {
+                                        break;
+                                    }
+                                    Vector3d newPoint = new Vector3d(e.getPosX(), e.getPosY(), e.getPosZ());
+                                    if (MathHelper.sqrt(playerEntity.getDistanceSq(newPoint)) > pathStart.get()) {
+                                        trajectory.add(newPoint);
+                                    }
+                                    cycle++;
                                 }
-                                Vector3d newPoint=new Vector3d(e.getPosX(), e.getPosY(), e.getPosZ());
-                                if(MathHelper.sqrt(playerEntity.getDistanceSq(newPoint))>pathStart.get())
-                                {
-                                    trajectory.add(newPoint);
-                                }
-                                cycle++;
-                            }
-                            IntColor colorFirst = new IntColor(Integer.parseInt(primaryDotColor.get(), 16));
-                            IntColor color2 = new IntColor(Integer.parseInt(secondaryDotColor.get(), 16));
+                                IntColor colorFirst = new IntColor(Integer.parseInt(primaryDotColor.get(), 16));
+                                IntColor color2 = new IntColor(Integer.parseInt(secondaryDotColor.get(), 16));
 //                            System.out.println(colorFirst.getPackedColor());
-                            float pointScale;
-                            for (Vector3d vec3d : trajectory)
-                            {
-                                double distanceFromPlayer=Math.sqrt(playerEntity.getDistanceSq(vec3d));
-                                Vector3d end=trajectory.get(trajectory.size()-1);
-                                double totalDistance=Math.sqrt(playerEntity.getDistanceSq(end));
-                                pointScale=(float) (distanceFromPlayer/totalDistance);
-                                //possible particles: bubble
-                                Particle point = particleManager.addParticle(ParticleTypes.END_ROD, vec3d.x, vec3d.y, vec3d.z, 0, 0, 0);
-                                if (point != null)
-                                {
-                                    if (trajectory.indexOf(vec3d) % 2 == 0)
-                                    {
-                                        point.setColor(colorFirst.getRed() / 255f, colorFirst.getGreen() / 255f, colorFirst.getBlue() / 255f);
+                                float pointScale;
+                                for (Vector3d vec3d : trajectory) {
+                                    double distanceFromPlayer = Math.sqrt(playerEntity.getDistanceSq(vec3d));
+                                    Vector3d end = trajectory.get(trajectory.size() - 1);
+                                    double totalDistance = Math.sqrt(playerEntity.getDistanceSq(end));
+                                    pointScale = (float) (distanceFromPlayer / totalDistance);
+                                    //possible particles: bubble
+                                    Particle point = particleManager.addParticle(ParticleTypes.END_ROD, vec3d.x, vec3d.y, vec3d.z, 0, 0, 0);
+                                    if (point != null) {
+                                        if (trajectory.indexOf(vec3d) % 2 == 0) {
+                                            point.setColor(colorFirst.getRed() / 255f, colorFirst.getGreen() / 255f, colorFirst.getBlue() / 255f);
+                                        } else {
+                                            point.setColor(color2.getRed() / 255f, color2.getGreen() / 255f, color2.getBlue() / 255f);
+                                        }
+                                        point.multipleParticleScaleBy(pointScale);
+                                        point.setExpired();
                                     }
-                                    else
-                                    {
-                                        point.setColor(color2.getRed() / 255f, color2.getGreen() / 255f, color2.getBlue() / 255f);
-                                    }
-                                    point.multipleParticleScaleBy(pointScale);
-                                    point.setExpired();
                                 }
                             }
                         }
