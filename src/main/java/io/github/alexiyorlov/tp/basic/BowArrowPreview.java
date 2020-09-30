@@ -18,6 +18,7 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,21 +36,18 @@ public class BowArrowPreview extends Entity implements PreviewEntity<AbstractArr
     }
 
     @Override
-    public AbstractArrowEntity initializeEntity(PlayerEntity player, ItemStack associatedItem)
-    {
+    public List<AbstractArrowEntity> initializeEntities(PlayerEntity player, ItemStack associatedItem) {
         int timeleft = player.getItemInUseCount();
-        if (timeleft > 0)
-        {
+        if (timeleft > 0) {
             int maxduration = player.getHeldItemMainhand().getUseDuration();
             int difference = maxduration - timeleft;
             float arrowVelocity = BowItem.getArrowVelocity(difference);
-            if (arrowVelocity >= 0.1)
-            {
+            if (arrowVelocity >= 0.1) {
                 ArrowEntity entityArrow = new ArrowEntity(world, player);
                 //inaccuracy always 0
                 entityArrow.shoot(player, player.rotationPitch, player.rotationYaw, 0, 3 * arrowVelocity, 0);
                 shooter = player;
-                return entityArrow;
+                return Collections.singletonList(entityArrow);
             }
         }
         return null;

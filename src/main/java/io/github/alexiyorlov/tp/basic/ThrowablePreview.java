@@ -16,12 +16,14 @@ import net.minecraft.network.play.server.SSpawnObjectPacket;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Created on 2/25/18.
  */
 @InvisibleEntity
-public class ThrowablePreview extends Entity implements PreviewEntity<ThrowableEntity>
-{
+public class ThrowablePreview extends Entity implements PreviewEntity<ThrowableEntity> {
     protected boolean inGround;
     protected Entity ignoreEntity, shooter;
     protected int ignoreTime;
@@ -31,36 +33,33 @@ public class ThrowablePreview extends Entity implements PreviewEntity<ThrowableE
     }
 
     @Override
-    public ThrowableEntity initializeEntity(PlayerEntity player, ItemStack associatedItem)
-    {
+    public List<ThrowableEntity> initializeEntities(PlayerEntity player, ItemStack associatedItem) {
         Item item = associatedItem.getItem();
-        if (item == Items.SNOWBALL)
-        {
+        if (item == Items.SNOWBALL) {
             shooter = player;
             SnowballEntity entitySnowball = new SnowballEntity(world, player);
             entitySnowball.shoot(player, player.rotationPitch, player.rotationYaw, 0, 1.5f, 0);
-            return entitySnowball;
-        }
-        else if (item == Items.EGG)
+            return Collections.singletonList(entitySnowball);
+        } else if (item == Items.EGG)
         {
             shooter = player;
             EggEntity entityEgg = new EggEntity(world, player);
             entityEgg.shoot(player, player.rotationPitch, player.rotationYaw, 0, 1.5f, 0);
-            return entityEgg;
+            return Collections.singletonList(entityEgg);
         }
         else if (item == Items.ENDER_PEARL)
         {
             EnderPearlEntity entityEnderPearl = new EnderPearlEntity(world, player);
             shooter = player;
             entityEnderPearl.shoot(player, player.rotationPitch, player.rotationYaw, 0, 1.5f, 0);
-            return entityEnderPearl;
+            return Collections.singletonList(entityEnderPearl);
         }
         else if (item == Items.SPLASH_POTION || item == Items.LINGERING_POTION)
         {
             PotionEntity potionEntity = new PotionEntity(world, player);
             shooter = player;
             potionEntity.shoot(player, player.rotationPitch, player.rotationYaw, -20, 0.5f, 0);
-            return potionEntity;
+            return Collections.singletonList(potionEntity);
         }
         return null;
     }

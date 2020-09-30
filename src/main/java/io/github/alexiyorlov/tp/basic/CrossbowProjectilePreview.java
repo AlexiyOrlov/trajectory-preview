@@ -5,8 +5,6 @@ import io.github.alexiyorlov.tp.api.PreviewEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.Quaternion;
 import net.minecraft.client.renderer.Vector3f;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -26,6 +24,7 @@ import net.minecraft.util.math.*;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.World;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -72,27 +71,33 @@ public class CrossbowProjectilePreview extends Entity implements PreviewEntity<A
     }
 
     @Override
-    public AbstractArrowEntity initializeEntity(PlayerEntity player, ItemStack associatedItem)
-    {
-        if (associatedItem.getItem() instanceof CrossbowItem)
-        {
-            if (CrossbowItem.isCharged(associatedItem))
-            {
+    public List<AbstractArrowEntity> initializeEntities(PlayerEntity player, ItemStack associatedItem) {
+        if (associatedItem.getItem() instanceof CrossbowItem) {
+            if (CrossbowItem.isCharged(associatedItem)) {
                 List<ItemStack> allProjectiles = getChargedProjectiles(associatedItem);
-                if (allProjectiles.size() == 1 && allProjectiles.get(0).getItem() instanceof ArrowItem)
-                {
-                    AbstractArrowEntity abstractArrowEntity = createArrow(world, player, associatedItem, new ItemStack(Items.ARROW));
-                    Vec3d vec3d1 = player.getLook(1.0F);
-                    //0, -10, 10 for all projectiles
-                    Quaternion quaternion = new Quaternion(new Vector3f(vec3d1), 0, true);
-                    Vec3d vec3d = player.getLook(1.0F);
-                    Vector3f vector3f = new Vector3f(vec3d);
-                    vector3f.transform(quaternion);
-                    float velocity = 3.15f;
-//                1.6F for firework rocket; 3.15F for arrow
-                    abstractArrowEntity.shoot(vector3f.getX(), vector3f.getY(), vector3f.getZ(), velocity, 0);
-                    return abstractArrowEntity;
+                List<AbstractArrowEntity> abstractArrowEntities = new ArrayList<>(3);
+                for (int i = 0; i < allProjectiles.size(); i++) {
+                    ItemStack itemStack = allProjectiles.get(i);
+                    if (itemStack.getItem() instanceof ArrowItem) {
+                        AbstractArrowEntity abstractArrowEntity = createArrow(world, player, associatedItem, new ItemStack(Items.ARROW));
+                        Vec3d vec3d1 = player.getUpVector(1.0F);
+                        float angle = 0;
+                        if (i == 1)
+                            angle = -10;
+                        else if (i == 2)
+                            angle = 10;
+                        Quaternion quaternion = new Quaternion(new Vector3f(vec3d1), angle, true);
+                        Vec3d vec3d = player.getLook(1.0F);
+                        Vector3f vector3f = new Vector3f(vec3d);
+                        vector3f.transform(quaternion);
+                        float velocity = 3.15f;
+                        //                1.6F for firework rocket; 3.15F for arrow
+                        abstractArrowEntity.shoot(vector3f.getX(), vector3f.getY(), vector3f.getZ(), velocity, 0);
+                        abstractArrowEntities.add(abstractArrowEntity);
+                    }
+
                 }
+                return abstractArrowEntities;
             }
         }
         return null;
@@ -131,8 +136,6 @@ public class CrossbowProjectilePreview extends Entity implements PreviewEntity<A
             }
         }
 
-
-
             Vec3d vec3d1 = new Vec3d(this.getPosX(), this.getPosY(), this.getPosZ());
             Vec3d vec3d2 = vec3d1.add(vec3d);
             RayTraceResult raytraceresult = this.world.rayTraceBlocks(new RayTraceContext(vec3d1, vec3d2, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, this));
@@ -163,7 +166,6 @@ public class CrossbowProjectilePreview extends Entity implements PreviewEntity<A
 
                 if (raytraceresult != null && !flag)
                 {
-//                    remove();
                     this.isAirBorne = true;
                 }
 
@@ -179,11 +181,6 @@ public class CrossbowProjectilePreview extends Entity implements PreviewEntity<A
             double d1 = vec3d.x;
             double d2 = vec3d.y;
             double d0 = vec3d.z;
-//            if (simulatedEntity.getIsCritical()) {
-//                for(int i = 0; i < 4; ++i) {
-//                    this.world.addParticle(ParticleTypes.CRIT, this.posX + d1 * (double)i / 4.0D, this.posY + d2 * (double)i / 4.0D, this.posZ + d0 * (double)i / 4.0D, -d1, -d2 + 0.2D, -d0);
-//                }
-//            }
             this.setPosition(this.getPosX()+d1, this.getPosY()+d2, this.getPosZ()+d0);
 
             float f4 = MathHelper.sqrt(horizontalMag(vec3d));
@@ -217,10 +214,6 @@ public class CrossbowProjectilePreview extends Entity implements PreviewEntity<A
             float f1 = 0.99F;
             if (this.isInWater())
             {
-//                for(int j = 0; j < 4; ++j) {
-//                    float f3 = 0.25F;
-//                    this.world.addParticle(ParticleTypes.BUBBLE, this.posX - d1 * f3, this.posY - d2 * 0.25D, this.posZ - d0 *f3, d1, d2, d0);
-//                }
                 f1 = 0.6f;// simulatedEntity.getWaterDrag();
             }
 
