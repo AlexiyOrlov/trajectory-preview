@@ -103,6 +103,13 @@ dependencies {
     // deobf 'com.mod-buildcraft:buildcraft:6.0.8:dev'
 }
 
+processResources{
+    from(sourceSets.main.resources.srcDirs){
+        include('META-INF/mods.toml')
+        expand(version: project.version)
+    }
+}
+
 // Example for how to get properties into the manifest for reading by the runtime..
 jar {
     manifest {
