@@ -22,44 +22,44 @@ public class ConfigScreen extends Screen
     }
 
     @Override
-    public void func_230430_a_(MatrixStack matrixStack,int p_render_1_, int p_render_2_, float p_render_3_)
+    public void render(MatrixStack matrixStack,int p_render_1_, int p_render_2_, float p_render_3_)
     {
-        func_230446_a_(matrixStack);
-        func_238472_a_(matrixStack,field_230712_o_,new StringTextComponent("Trajectory preview configuration"),field_230708_k_/2,6,0xffffff);
-        super.func_230430_a_(matrixStack,p_render_1_, p_render_2_, p_render_3_);
-        for (Widget button : this.field_230710_m_)
+        renderBackground(matrixStack);
+        drawString(matrixStack,font,new StringTextComponent("Trajectory preview configuration"),width/2,6,0xffffff);
+        super.render(matrixStack,p_render_1_, p_render_2_, p_render_3_);
+        for (Widget button : this.buttons)
         {
             if(button instanceof TextFieldWidget)
             {
-                if (!button.func_230458_i_().getString().isEmpty())
+                if (!button.getMessage().getString().isEmpty())
                 {
-                    func_238475_b_(matrixStack,field_230712_o_, button.func_230458_i_(), button.field_230690_l_ - field_230712_o_.getStringWidth(button.func_230458_i_().getUnformattedComponentText())-3, button.field_230691_m_+6, 0xffffff);
+                    drawString(matrixStack,font, button.getMessage(), button.getWidth() - font.getStringWidth(button.getMessage().getUnformattedComponentText())-3, button.getWidth()+6, 0xffffff);
                 }
             }
         }
     }
 
     @Override
-    protected void func_231160_c_()
+    protected void init()
     {
-        super.func_231160_c_();
+        super.init();
         int i=30;
-        TextFieldWidget primaryDotColor=new TextFieldWidget(field_230712_o_,field_230708_k_/2,i,50,20,new StringTextComponent("Primary dot color"));
+        TextFieldWidget primaryDotColor=new TextFieldWidget(font,width/2,i,50,20,new StringTextComponent("Primary dot color"));
         primaryDotColor.setText(TrajectoryPreview.primaryDotColor.get());
         primaryDotColor.setValidator(s-> s.isEmpty() || StringUtils.isAlphanumeric(s));
-        func_230480_a_(primaryDotColor);
+        addButton(primaryDotColor);
         i+=20;
-        TextFieldWidget secondaryDotCOlor=new TextFieldWidget(field_230712_o_,field_230708_k_/2,i,50,20,new StringTextComponent("Secondary dot color"));
+        TextFieldWidget secondaryDotCOlor=new TextFieldWidget(font,width/2,i,50,20,new StringTextComponent("Secondary dot color"));
         secondaryDotCOlor.setText(TrajectoryPreview.secondaryDotColor.get());
-        func_230480_a_(secondaryDotCOlor);
+        addButton(secondaryDotCOlor);
         primaryDotColor.setValidator(s-> s.isEmpty() || StringUtils.isAlphanumeric(s));
         i+=20;
-        TextFieldWidget startpathfrom=new TextFieldWidget(field_230712_o_,field_230708_k_/2,i,50,20,new StringTextComponent("Path starts after"));
+        TextFieldWidget startpathfrom=new TextFieldWidget(font,width/2,i,50,20,new StringTextComponent("Path starts after"));
         startpathfrom.setText(TrajectoryPreview.pathStart.get().intValue()+"");
-        func_230480_a_(startpathfrom);
+        addButton(startpathfrom);
         startpathfrom.setValidator(s-> s.isEmpty() || StringUtils.isNumeric(s));
         i+=20;
-        this.func_230480_a_(new ExtendedButton(field_230708_k_/2,field_230709_l_-30,100,20,new StringTextComponent("Save"), p_onPress_1_ -> {
+        this.addButton(new ExtendedButton(width/2,height-30,100,20,new StringTextComponent("Save"), p_onPress_1_ -> {
             try
             {
                 TrajectoryPreview.primaryDotColor.set(primaryDotColor.getText());
@@ -75,13 +75,13 @@ public class ConfigScreen extends Screen
             {
                 e.printStackTrace();
             }
-            func_231175_as__();
+            closeScreen();
         }));
     }
 
     @Override
-    public void func_231175_as__()
+    public void closeScreen()
     {
-        field_230706_i_.displayGuiScreen(previous);
+        minecraft.displayGuiScreen(previous);
     }
 }
