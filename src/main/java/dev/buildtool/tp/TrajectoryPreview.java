@@ -193,6 +193,7 @@ public class TrajectoryPreview
     @SubscribeEvent
     public void registerPaticle(RegistryEvent.Register<ParticleType<?>> registryEvent)
     {
-        particleType = Registry.register(Registry.PARTICLE_TYPE, new ResourceLocation(ID, "preview_point"), new PType(false));
+        particleType = new PType(false);// Registry.register(Registry.PARTICLE_TYPE, new ResourceLocation(ID, "preview_point"), new PType(false));
+        registryEvent.getRegistry().register(particleType.setRegistryName(ID,"preview_point"));
     }
 }
