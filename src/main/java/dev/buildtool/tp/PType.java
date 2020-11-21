@@ -7,8 +7,7 @@ import net.minecraft.particles.BasicParticleType;
  */
 public class PType extends BasicParticleType
 {
-    public PType(boolean p_i50791_1_)
-    {
-        super(p_i50791_1_);
+    public PType(boolean alwaysShow) {
+        super(alwaysShow);
     }
 }
