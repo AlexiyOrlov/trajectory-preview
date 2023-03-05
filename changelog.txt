@@ -1,3 +1,6 @@
+5.0.0-1.19.3:
+updated to 1.19.3;
+
 4.0.0-1.18.1:
 updated for 1.18.1;
 added trajectory toggle key (H);

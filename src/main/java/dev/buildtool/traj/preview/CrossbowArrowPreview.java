@@ -1,12 +1,11 @@
 package dev.buildtool.traj.preview;
 
 import com.google.common.collect.Lists;
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
@@ -30,6 +29,8 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,17 +52,16 @@ public class CrossbowArrowPreview extends Entity implements PreviewEntity<Abstra
                     for (int i = 0; i < chargedArrows.size(); i++) {
                         AbstractArrow arrow = getArrow(level, player, associatedItem, chargedArrows.get(i));
                         Vec3 vec31 = player.getUpVector(1.0F);
-                        Quaternion quaternion;
+                        Quaternionf quaternion;
                         if (i == 0) {
-                            quaternion = new Quaternion(new Vector3f(vec31), 0, true);
+                            quaternion = new Quaternionf().setAngleAxis(0, vec31.x, vec31.y, vec31.z);
                         } else if (i == 1) {
-                            quaternion = new Quaternion(new Vector3f(vec31), -10, true);
+                            quaternion = new Quaternionf().setAngleAxis(Math.PI / 180f * -10, vec31.x, vec31.y, vec31.z);
                         } else {
-                            quaternion = new Quaternion(new Vector3f(vec31), 10, true);
+                            quaternion = new Quaternionf().setAngleAxis(Math.PI / 180f * 10, vec31.x, vec31.y, vec31.z);
                         }
-                        Vec3 vec3 = player.getViewVector(1.0F);
-                        Vector3f vector3f = new Vector3f(vec3);
-                        vector3f.transform(quaternion);
+                        Vec3 vector3 = player.getViewVector(1);
+                        Vector3f vector3f = vector3.toVector3f().rotate(quaternion);
                         arrow.shoot(vector3f.x(), vector3f.y(), vector3f.z(), 3.15f, 0);
                         arrows.add(arrow);
                     }
@@ -234,7 +234,7 @@ public class CrossbowArrowPreview extends Entity implements PreviewEntity<Abstra
     }
 
     @Override
-    public Packet<?> getAddEntityPacket() {
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
         return new ClientboundAddEntityPacket(this);
     }
 }

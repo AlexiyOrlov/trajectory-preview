@@ -1,6 +1,8 @@
 {
   "pack": {
     "description": "trajectory_preview resources",
-    "pack_format": 8
+    "pack_format": 11,
+    "forge:resource_pack_format": 12,
+    "forge:data_pack_format": 10
   }
 }

@@ -13,7 +13,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.lwjgl.glfw.GLFW;
@@ -30,7 +30,7 @@ public class Events {
     static boolean render = true;
 
     @SubscribeEvent
-    public static void drawTrajectory(RenderGameOverlayEvent.Post event) {
+    public static void drawTrajectory(RenderGuiOverlayEvent.Post event) {
         if (render) {
             Minecraft minecraft = Minecraft.getInstance();
             ParticleEngine particleEngine = minecraft.particleEngine;
@@ -101,7 +101,7 @@ public class Events {
     }
 
     @SubscribeEvent
-    public static void keyEvents(InputEvent.KeyInputEvent keyInputEvent) {
+    public static void keyEvents(InputEvent.Key keyInputEvent) {
 
         if (keyInputEvent.getAction() == GLFW.GLFW_RELEASE && keyInputEvent.getKey() == ClientModSetup.keyMapping.getKey().getValue()) {
             render = !render;
