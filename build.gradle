@@ -3,7 +3,7 @@ plugins {
     id 'eclipse'
     id 'maven-publish'
 }
-version = '5.0.0-1.19.3'
+version = '4.5.0-1.19'
 group = 'dev.buildtool' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'Trajectory Preview'
 
@@ -13,7 +13,7 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 minecraft {
 
-    mappings channel: 'official', version: '1.19.3'
+    mappings channel: 'official', version: '1.19'
 
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
@@ -83,7 +83,7 @@ dependencies {
     // Specify the version of Minecraft to use. If this is any group other than 'net.minecraft', it is assumed
     // that the dep is a ForgeGradle 'patcher' dependency, and its patches will be applied.
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
-    minecraft 'net.minecraftforge:forge:1.19.3-44.1.0'
+    minecraft 'net.minecraftforge:forge:1.19-41.1.0'
 }
 
 // Example for how to get properties into the manifest for reading at runtime.
