@@ -170,6 +170,7 @@ public class CrossbowArrowPreview extends Entity implements PreviewEntity<Abstra
                 }
 
                 hitresult = null;
+                discard();
             }
 
             vec3 = this.getDeltaMovement();

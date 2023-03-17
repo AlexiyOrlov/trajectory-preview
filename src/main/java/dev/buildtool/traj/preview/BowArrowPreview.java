@@ -116,6 +116,7 @@ public class BowArrowPreview extends Entity implements PreviewEntity<AbstractArr
                 }
 
                 hitresult = null;
+                discard();
             }
 
             vec3 = this.getDeltaMovement();
