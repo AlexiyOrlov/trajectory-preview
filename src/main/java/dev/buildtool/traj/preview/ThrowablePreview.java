@@ -56,7 +56,6 @@ public class ThrowablePreview extends Entity implements PreviewEntity<ThrowableI
     public void simulateShot(ThrowableItemProjectile simulatedEntity) {
         super.tick();
         HitResult hitresult = ProjectileUtil.getHitResult(this, entity -> !entity.isSpectator() && entity.isAlive() && entity.isPickable());
-        boolean flag = false;
         if (hitresult.getType() == HitResult.Type.BLOCK) {
             BlockPos blockpos = ((BlockHitResult) hitresult).getBlockPos();
             BlockState blockstate = this.level.getBlockState(blockpos);
