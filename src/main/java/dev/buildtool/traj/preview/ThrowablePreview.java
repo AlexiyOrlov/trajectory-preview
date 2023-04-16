@@ -9,10 +9,12 @@ import net.minecraft.entity.item.EnderPearlEntity;
 import net.minecraft.entity.item.ExperienceBottleEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.*;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.item.*;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.play.server.SSpawnObjectPacket;
+import net.minecraft.tags.ITag;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
@@ -120,5 +122,8 @@ public class ThrowablePreview extends Entity implements PreviewEntity<ThrowableE
         return 0.03f;
     }
 
-
+    @Override
+    public boolean updateFluidHeightAndDoFluidPushing(ITag<Fluid> p_210500_1_, double p_210500_2_) {
+        return false;
+    }
 }
