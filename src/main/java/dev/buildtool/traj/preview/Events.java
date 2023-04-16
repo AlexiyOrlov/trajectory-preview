@@ -3,14 +3,14 @@ package dev.buildtool.traj.preview;
 import com.google.common.collect.ImmutableSet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
-import net.minecraft.client.particle.ParticleEngine;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.client.particle.ParticleManager;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.particles.ParticleTypes;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -33,10 +33,10 @@ public class Events {
     public static void drawTrajectory(RenderGameOverlayEvent.Post event) {
         if (render) {
             Minecraft minecraft = Minecraft.getInstance();
-            ParticleEngine particleEngine = minecraft.particleEngine;
-            Player player = minecraft.player;
+            ParticleManager particleEngine = minecraft.particleEngine;
+            PlayerEntity player = minecraft.player;
             assert player != null;
-            Level level = player.level;
+            World level = player.level;
             ItemStack itemStack = player.getMainHandItem();
             Item item = itemStack.getItem();
             if (!itemStack.isEmpty()) {
@@ -44,22 +44,22 @@ public class Events {
                     Class<? extends PreviewEntity<?>> previewEntityClass = previewProvider.getPreviewEntityFor(player, item);
                     if (previewEntityClass != null) {
                         try {
-                            PreviewEntity<Entity> previewEntity = (PreviewEntity<Entity>) previewEntityClass.getConstructor(Level.class).newInstance(level);
+                            PreviewEntity<Entity> previewEntity = (PreviewEntity<Entity>) previewEntityClass.getConstructor(World.class).newInstance(level);
                             List<Entity> targets = previewEntity.initializeEntities(player, itemStack);
                             if (targets != null) {
                                 for (Entity target : targets) {
-                                    previewEntity = (PreviewEntity<Entity>) previewEntityClass.getConstructor(Level.class).newInstance(level);
+                                    previewEntity = (PreviewEntity<Entity>) previewEntityClass.getConstructor(World.class).newInstance(level);
                                     Entity entity = (Entity) previewEntity;
-                                    entity.setPos(target.position());
+                                    entity.setPos(target.getX(), target.getY(), target.getZ());
                                     entity.setDeltaMovement(target.getDeltaMovement());
-                                    entity.setXRot(target.getXRot());
-                                    entity.setYRot(target.getYRot());
+                                    entity.xRot = target.xRot;
+                                    entity.yRot = target.yRot;
                                     level.addFreshEntity(entity);
-                                    ArrayList<Vec3> trajectory = new ArrayList<>(128);
+                                    ArrayList<Vector3d> trajectory = new ArrayList<>(128);
                                     short cycle = 0;
                                     while (entity.isAlive()) {
                                         previewEntity.simulateShot(target);
-                                        Vec3 newPoint = new Vec3(entity.getX(), entity.getY(), entity.getZ());
+                                        Vector3d newPoint = new Vector3d(entity.getX(), entity.getY(), entity.getZ());
                                         if (Math.sqrt(player.distanceToSqr(newPoint)) > TrajectoryPreview.trajectoryStart.get()) {
                                             trajectory.add(newPoint);
                                         }
@@ -70,9 +70,9 @@ public class Events {
                                     IntegerColor first = new IntegerColor(Integer.parseInt(TrajectoryPreview.firstColor.get(), 16));
                                     IntegerColor second = new IntegerColor(Integer.parseInt(TrajectoryPreview.secondColor.get(), 16));
                                     double pointScale;
-                                    for (Vec3 vec3 : trajectory) {
+                                    for (Vector3d vec3 : trajectory) {
                                         double distanceFromPlayer = Math.sqrt(player.distanceToSqr(vec3));
-                                        Vec3 end = trajectory.get(trajectory.size() - 1);
+                                        Vector3d end = trajectory.get(trajectory.size() - 1);
                                         double totalDistance = Math.sqrt(player.distanceToSqr(end));
                                         pointScale = distanceFromPlayer / totalDistance;
                                         Particle particle = particleEngine.createParticle(ParticleTypes.END_ROD, vec3.x, vec3.y, vec3.z, 0, 0, 0);
@@ -102,7 +102,6 @@ public class Events {
 
     @SubscribeEvent
     public static void keyEvents(InputEvent.KeyInputEvent keyInputEvent) {
-
         if (keyInputEvent.getAction() == GLFW.GLFW_RELEASE && keyInputEvent.getKey() == ClientModSetup.keyMapping.getKey().getValue()) {
             render = !render;
         }

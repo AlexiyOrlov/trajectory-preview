@@ -1,49 +1,44 @@
 package dev.buildtool.traj.preview;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
-import net.minecraft.tags.TagKey;
-import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.AbstractArrow;
-import net.minecraft.world.entity.projectile.Arrow;
-import net.minecraft.world.item.BowItem;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.phys.shapes.VoxelShape;
+
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.AbstractArrowEntity;
+import net.minecraft.entity.projectile.ArrowEntity;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.item.BowItem;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.IPacket;
+import net.minecraft.network.play.server.SSpawnObjectPacket;
+import net.minecraft.tags.ITag;
+import net.minecraft.util.math.*;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.World;
 
 import java.util.Collections;
 import java.util.List;
 
-public class BowArrowPreview extends Entity implements PreviewEntity<AbstractArrow> {
+public class BowArrowPreview extends Entity implements PreviewEntity<AbstractArrowEntity> {
     private boolean inGround;
 
-    public BowArrowPreview(Level level) {
+    public BowArrowPreview(World level) {
         super(EntityType.ARROW, level);
     }
 
     @Override
-    public List<AbstractArrow> initializeEntities(Player player, ItemStack associatedItem) {
+    public List<AbstractArrowEntity> initializeEntities(PlayerEntity player, ItemStack associatedItem) {
         int timeLeft = player.getUseItemRemainingTicks();
         if (timeLeft > 0) {
             int maxDuration = player.getMainHandItem().getUseDuration();
             int difference = maxDuration - timeLeft;
             float arrowVelocity = BowItem.getPowerForTime(difference);
             if (arrowVelocity >= 0.1) {
-                Arrow arrow = new Arrow(level, player);
-                arrow.shootFromRotation(player, player.getXRot(), player.getYRot(), 0, 3 * arrowVelocity, 0);
+                ArrowEntity arrow = new ArrowEntity(level, player);
+                arrow.shootFromRotation(player, player.xRot, player.yRot, 0, 3 * arrowVelocity, 0);
                 return Collections.singletonList(arrow);
             }
         }
@@ -51,16 +46,16 @@ public class BowArrowPreview extends Entity implements PreviewEntity<AbstractArr
     }
 
     @Override
-    public void simulateShot(AbstractArrow simulatedEntity) {
+    public void simulateShot(AbstractArrowEntity simulatedEntity) {
         super.tick();
-        boolean flag = noPhysics;
-        Vec3 vec3 = this.getDeltaMovement();
+        Vector3d vector3d = this.getDeltaMovement();
+        boolean flag = this.noPhysics;
         if (this.xRotO == 0.0F && this.yRotO == 0.0F) {
-            double d0 = vec3.horizontalDistance();
-            this.setYRot((float) (Mth.atan2(vec3.x, vec3.z) * (double) (180F / (float) Math.PI)));
-            this.setXRot((float) (Mth.atan2(vec3.y, d0) * (double) (180F / (float) Math.PI)));
-            this.yRotO = this.getYRot();
-            this.xRotO = this.getXRot();
+            float f = MathHelper.sqrt(getHorizontalDistanceSqr(vector3d));
+            this.yRot = (float) (MathHelper.atan2(vector3d.x, vector3d.z) * (double) (180F / (float) Math.PI));
+            this.xRot = (float) (MathHelper.atan2(vector3d.y, f) * (double) (180F / (float) Math.PI));
+            this.yRotO = this.yRot;
+            this.xRotO = this.xRot;
         }
 
         BlockPos blockpos = this.blockPosition();
@@ -68,9 +63,9 @@ public class BowArrowPreview extends Entity implements PreviewEntity<AbstractArr
         if (!blockstate.isAir() && !flag) {
             VoxelShape voxelshape = blockstate.getCollisionShape(this.level, blockpos);
             if (!voxelshape.isEmpty()) {
-                Vec3 vec31 = this.position();
+                Vector3d vec31 = this.position();
 
-                for (AABB aabb : voxelshape.toAabbs()) {
+                for (AxisAlignedBB aabb : voxelshape.toAabbs()) {
                     if (aabb.move(blockpos).contains(vec31)) {
                         this.inGround = true;
                         break;
@@ -79,76 +74,72 @@ public class BowArrowPreview extends Entity implements PreviewEntity<AbstractArr
             }
         }
 
-        if (this.isInWaterOrRain() || blockstate.is(Blocks.POWDER_SNOW)) {
-            this.clearFire();
-        }
-
         if (this.inGround && !flag) {
-            discard();
+            remove();
         } else {
-            Vec3 vec32 = this.position();
-            Vec3 vec33 = vec32.add(vec3);
-            HitResult hitresult = this.level.clip(new ClipContext(vec32, vec33, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
-            if (hitresult.getType() != HitResult.Type.MISS) {
-                vec33 = hitresult.getLocation();
+            Vector3d vector3d2 = this.position();
+            Vector3d vector3d3 = vector3d2.add(vector3d);
+            RayTraceResult raytraceresult = this.level.clip(new RayTraceContext(vector3d2, vector3d3, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, this));
+            if (raytraceresult.getType() != RayTraceResult.Type.MISS) {
+                vector3d3 = raytraceresult.getLocation();
             }
 
-            while (!this.isRemoved()) {
-                EntityHitResult entityhitresult = simulatedEntity.findHitEntity(vec32, vec33);
-                if (entityhitresult != null) {
-                    hitresult = entityhitresult;
+            while (!this.removed) {
+                EntityRayTraceResult entityraytraceresult = simulatedEntity.findHitEntity(vector3d2, vector3d3);
+                if (entityraytraceresult != null) {
+                    raytraceresult = entityraytraceresult;
                 }
 
-                if (hitresult != null && hitresult.getType() == HitResult.Type.ENTITY) {
-                    Entity entity = ((EntityHitResult) hitresult).getEntity();
+                if (raytraceresult != null && raytraceresult.getType() == RayTraceResult.Type.ENTITY) {
+                    Entity entity = ((EntityRayTraceResult) raytraceresult).getEntity();
                     Entity entity1 = simulatedEntity.getOwner();
-                    if (entity instanceof Player && entity1 instanceof Player && !((Player) entity1).canHarmPlayer((Player) entity)) {
-                        hitresult = null;
-                        entityhitresult = null;
+                    if (entity instanceof PlayerEntity && entity1 instanceof PlayerEntity && !((PlayerEntity) entity1).canHarmPlayer((PlayerEntity) entity)) {
+                        raytraceresult = null;
+                        entityraytraceresult = null;
                     }
                 }
 
-                if (hitresult != null && hitresult.getType() != HitResult.Type.MISS && !flag) {
+                if (raytraceresult != null && raytraceresult.getType() != RayTraceResult.Type.MISS && !flag) {
                     this.hasImpulse = true;
                 }
 
-                if (entityhitresult == null || simulatedEntity.getPierceLevel() <= 0) {
+                if (entityraytraceresult == null || simulatedEntity.getPierceLevel() <= 0) {
                     break;
                 }
 
-                hitresult = null;
+                raytraceresult = null;
             }
 
-            vec3 = this.getDeltaMovement();
-            double d5 = vec3.x;
-            double d6 = vec3.y;
-            double d1 = vec3.z;
+            vector3d = this.getDeltaMovement();
+            double d3 = vector3d.x;
+            double d4 = vector3d.y;
+            double d0 = vector3d.z;
 
-            double d7 = this.getX() + d5;
-            double d2 = this.getY() + d6;
-            double d3 = this.getZ() + d1;
-            double d4 = vec3.horizontalDistance();
+            double d5 = this.getX() + d3;
+            double d1 = this.getY() + d4;
+            double d2 = this.getZ() + d0;
+            float f1 = MathHelper.sqrt(getHorizontalDistanceSqr(vector3d));
             if (flag) {
-                this.setYRot((float) (Mth.atan2(-d5, -d1) * (double) (180F / (float) Math.PI)));
+                this.yRot = (float) (MathHelper.atan2(-d3, -d0) * (double) (180F / (float) Math.PI));
             } else {
-                this.setYRot((float) (Mth.atan2(d5, d1) * (double) (180F / (float) Math.PI)));
+                this.yRot = (float) (MathHelper.atan2(d3, d0) * (double) (180F / (float) Math.PI));
             }
 
-            this.setXRot((float) (Mth.atan2(d6, d4) * (double) (180F / (float) Math.PI)));
-            this.setXRot(lerpRotation(this.xRotO, this.getXRot()));
-            this.setYRot(lerpRotation(this.yRotO, this.getYRot()));
-            float f = 0.99F;
+            this.xRot = (float) (MathHelper.atan2(d4, f1) * (double) (180F / (float) Math.PI));
+            this.xRot = lerpRotation(this.xRotO, this.xRot);
+            this.yRot = lerpRotation(this.yRotO, this.yRot);
             if (this.isInWater()) {
-                discard();
+                remove();
             }
+            float f2 = 0.99F;
 
-            this.setDeltaMovement(vec3.scale(f));
+            this.setDeltaMovement(vector3d.scale(f2));
             if (!this.isNoGravity() && !flag) {
-                Vec3 vec34 = this.getDeltaMovement();
-                this.setDeltaMovement(vec34.x, vec34.y - (double) 0.05F, vec34.z);
+                Vector3d vector3d4 = this.getDeltaMovement();
+                this.setDeltaMovement(vector3d4.x, vector3d4.y - (double) 0.05F, vector3d4.z);
             }
 
-            this.setPos(d7, d2, d3);
+            this.setPos(d5, d1, d2);
             this.checkInsideBlocks();
         }
     }
@@ -159,18 +150,18 @@ public class BowArrowPreview extends Entity implements PreviewEntity<AbstractArr
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag p_20052_) {
+    protected void readAdditionalSaveData(CompoundNBT p_20052_) {
 
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag p_20139_) {
+    protected void addAdditionalSaveData(CompoundNBT p_20139_) {
 
     }
 
     @Override
-    public Packet<?> getAddEntityPacket() {
-        return new ClientboundAddEntityPacket(this);
+    public IPacket<?> getAddEntityPacket() {
+        return new SSpawnObjectPacket(this);
     }
 
     protected static float lerpRotation(float p_37274_, float p_37275_) {
@@ -182,11 +173,11 @@ public class BowArrowPreview extends Entity implements PreviewEntity<AbstractArr
             p_37274_ += 360.0F;
         }
 
-        return Mth.lerp(0.2F, p_37274_, p_37275_);
+        return MathHelper.lerp(0.2F, p_37274_, p_37275_);
     }
 
     @Override
-    public boolean updateFluidHeightAndDoFluidPushing(TagKey<Fluid> p_204032_, double p_204033_) {
+    public boolean updateFluidHeightAndDoFluidPushing(ITag<Fluid> p_210500_1_, double p_210500_2_) {
         return false;
     }
 }

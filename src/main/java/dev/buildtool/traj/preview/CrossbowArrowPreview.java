@@ -1,58 +1,53 @@
 package dev.buildtool.traj.preview;
 
 import com.google.common.collect.Lists;
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
-import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.tags.TagKey;
-import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.AbstractArrow;
-import net.minecraft.world.item.ArrowItem;
-import net.minecraft.world.item.CrossbowItem;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.AbstractArrowEntity;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.item.ArrowItem;
+import net.minecraft.item.CrossbowItem;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.network.IPacket;
+import net.minecraft.network.play.server.SSpawnObjectPacket;
+import net.minecraft.tags.ITag;
+import net.minecraft.util.SoundEvents;
+import net.minecraft.util.math.*;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.vector.Quaternion;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CrossbowArrowPreview extends Entity implements PreviewEntity<AbstractArrow> {
+public class CrossbowArrowPreview extends Entity implements PreviewEntity<AbstractArrowEntity> {
     private boolean inGround;
 
-    public CrossbowArrowPreview(Level level) {
+    public CrossbowArrowPreview(World level) {
         super(EntityType.ARROW, level);
     }
 
     @Override
-    public List<AbstractArrow> initializeEntities(Player player, ItemStack associatedItem) {
+    public List<AbstractArrowEntity> initializeEntities(PlayerEntity player, ItemStack associatedItem) {
         if (associatedItem.getItem() instanceof CrossbowItem) {
             if (CrossbowItem.isCharged(associatedItem)) {
                 List<ItemStack> chargedArrows = getChargedProjectiles(associatedItem);
                 if (chargedArrows.size() > 0) {
-                    List<AbstractArrow> arrows = new ArrayList<>(chargedArrows.size());
+                    List<AbstractArrowEntity> arrows = new ArrayList<>(chargedArrows.size());
                     for (int i = 0; i < chargedArrows.size(); i++) {
-                        AbstractArrow arrow = getArrow(level, player, associatedItem, chargedArrows.get(i));
-                        Vec3 vec31 = player.getUpVector(1.0F);
+                        AbstractArrowEntity arrow = getArrow(level, player, associatedItem, chargedArrows.get(i));
+                        Vector3d vec31 = player.getUpVector(1.0F);
                         Quaternion quaternion;
                         if (i == 0) {
                             quaternion = new Quaternion(new Vector3f(vec31), 0, true);
@@ -61,7 +56,7 @@ public class CrossbowArrowPreview extends Entity implements PreviewEntity<Abstra
                         } else {
                             quaternion = new Quaternion(new Vector3f(vec31), 10, true);
                         }
-                        Vec3 vec3 = player.getViewVector(1.0F);
+                        Vector3d vec3 = player.getViewVector(1.0F);
                         Vector3f vector3f = new Vector3f(vec3);
                         vector3f.transform(quaternion);
                         arrow.shoot(vector3f.x(), vector3f.y(), vector3f.z(), 3.15f, 0);
@@ -76,11 +71,11 @@ public class CrossbowArrowPreview extends Entity implements PreviewEntity<Abstra
 
     private static List<ItemStack> getChargedProjectiles(ItemStack p_40942_) {
         List<ItemStack> list = Lists.newArrayList();
-        CompoundTag compoundtag = p_40942_.getTag();
+        CompoundNBT compoundtag = p_40942_.getTag();
         if (compoundtag != null && compoundtag.contains("ChargedProjectiles", 9)) {
-            ListTag listtag = compoundtag.getList("ChargedProjectiles", 10);
+            ListNBT listtag = compoundtag.getList("ChargedProjectiles", 10);
             for (int i = 0; i < listtag.size(); ++i) {
-                CompoundTag compoundtag1 = listtag.getCompound(i);
+                CompoundNBT compoundtag1 = listtag.getCompound(i);
                 list.add(ItemStack.of(compoundtag1));
             }
         }
@@ -88,10 +83,10 @@ public class CrossbowArrowPreview extends Entity implements PreviewEntity<Abstra
         return list;
     }
 
-    private static AbstractArrow getArrow(Level p_40915_, LivingEntity p_40916_, ItemStack crossbow, ItemStack arrows) {
+    private static AbstractArrowEntity getArrow(World p_40915_, LivingEntity p_40916_, ItemStack crossbow, ItemStack arrows) {
         ArrowItem arrowitem = (ArrowItem) (arrows.getItem() instanceof ArrowItem ? arrows.getItem() : Items.ARROW);
-        AbstractArrow abstractarrow = arrowitem.createArrow(p_40915_, arrows, p_40916_);
-        if (p_40916_ instanceof Player) {
+        AbstractArrowEntity abstractarrow = arrowitem.createArrow(p_40915_, arrows, p_40916_);
+        if (p_40916_ instanceof PlayerEntity) {
             abstractarrow.setCritArrow(true);
         }
 
@@ -106,16 +101,16 @@ public class CrossbowArrowPreview extends Entity implements PreviewEntity<Abstra
     }
 
     @Override
-    public void simulateShot(AbstractArrow simulatedEntity) {
+    public void simulateShot(AbstractArrowEntity simulatedEntity) {
         super.tick();
         boolean flag = noPhysics;
-        Vec3 vec3 = this.getDeltaMovement();
+        Vector3d vector3d = this.getDeltaMovement();
         if (this.xRotO == 0.0F && this.yRotO == 0.0F) {
-            double d0 = vec3.horizontalDistance();
-            this.setYRot((float) (Mth.atan2(vec3.x, vec3.z) * (double) (180F / (float) Math.PI)));
-            this.setXRot((float) (Mth.atan2(vec3.y, d0) * (double) (180F / (float) Math.PI)));
-            this.yRotO = this.getYRot();
-            this.xRotO = this.getXRot();
+            float f = MathHelper.sqrt(getHorizontalDistanceSqr(vector3d));
+            this.yRot = (float) (MathHelper.atan2(vector3d.x, vector3d.z) * (double) (180F / (float) Math.PI));
+            this.xRot = (float) (MathHelper.atan2(vector3d.y, (double) f) * (double) (180F / (float) Math.PI));
+            this.yRotO = this.yRot;
+            this.xRotO = this.xRot;
         }
 
         BlockPos blockpos = this.blockPosition();
@@ -123,9 +118,9 @@ public class CrossbowArrowPreview extends Entity implements PreviewEntity<Abstra
         if (!blockstate.isAir() && !flag) {
             VoxelShape voxelshape = blockstate.getCollisionShape(this.level, blockpos);
             if (!voxelshape.isEmpty()) {
-                Vec3 vec31 = this.position();
+                Vector3d vec31 = this.position();
 
-                for (AABB aabb : voxelshape.toAabbs()) {
+                for (AxisAlignedBB aabb : voxelshape.toAabbs()) {
                     if (aabb.move(blockpos).contains(vec31)) {
                         this.inGround = true;
                         break;
@@ -134,36 +129,36 @@ public class CrossbowArrowPreview extends Entity implements PreviewEntity<Abstra
             }
         }
 
-        if (this.isInWaterOrRain() || blockstate.is(Blocks.POWDER_SNOW)) {
+        if (this.isInWaterOrRain() || blockstate.is(Blocks.SNOW)) {
             this.clearFire();
         }
 
         if (this.inGround && !flag) {
-            discard();
+            remove();
         } else {
-            Vec3 vec32 = this.position();
-            Vec3 vec33 = vec32.add(vec3);
-            HitResult hitresult = this.level.clip(new ClipContext(vec32, vec33, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
-            if (hitresult.getType() != HitResult.Type.MISS) {
+            Vector3d vec32 = this.position();
+            Vector3d vec33 = vec32.add(vector3d);
+            RayTraceResult hitresult = this.level.clip(new RayTraceContext(vec32, vec33, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, this));
+            if (hitresult.getType() != RayTraceResult.Type.MISS) {
                 vec33 = hitresult.getLocation();
             }
 
-            while (!this.isRemoved()) {
-                EntityHitResult entityhitresult = simulatedEntity.findHitEntity(vec32, vec33);
+            while (!this.removed) {
+                EntityRayTraceResult entityhitresult = simulatedEntity.findHitEntity(vec32, vec33);
                 if (entityhitresult != null) {
                     hitresult = entityhitresult;
                 }
 
-                if (hitresult != null && hitresult.getType() == HitResult.Type.ENTITY) {
-                    Entity entity = ((EntityHitResult) hitresult).getEntity();
+                if (hitresult != null && hitresult.getType() == RayTraceResult.Type.ENTITY) {
+                    Entity entity = ((EntityRayTraceResult) hitresult).getEntity();
                     Entity entity1 = simulatedEntity.getOwner();
-                    if (entity instanceof Player && entity1 instanceof Player && !((Player) entity1).canHarmPlayer((Player) entity)) {
+                    if (entity instanceof PlayerEntity && entity1 instanceof PlayerEntity && !((PlayerEntity) entity1).canHarmPlayer((PlayerEntity) entity)) {
                         hitresult = null;
                         entityhitresult = null;
                     }
                 }
 
-                if (hitresult != null && hitresult.getType() != HitResult.Type.MISS && !flag) {
+                if (hitresult != null && hitresult.getType() != RayTraceResult.Type.MISS && !flag) {
                     this.hasImpulse = true;
                 }
 
@@ -174,36 +169,35 @@ public class CrossbowArrowPreview extends Entity implements PreviewEntity<Abstra
                 hitresult = null;
             }
 
-            vec3 = this.getDeltaMovement();
-            double d5 = vec3.x;
-            double d6 = vec3.y;
-            double d1 = vec3.z;
-
-            double d7 = this.getX() + d5;
-            double d2 = this.getY() + d6;
-            double d3 = this.getZ() + d1;
-            double d4 = vec3.horizontalDistance();
+            vector3d = this.getDeltaMovement();
+            double d3 = vector3d.x;
+            double d4 = vector3d.y;
+            double d0 = vector3d.z;
+            double d5 = this.getX() + d3;
+            double d1 = this.getY() + d4;
+            double d2 = this.getZ() + d0;
+            float f1 = MathHelper.sqrt(getHorizontalDistanceSqr(vector3d));
             if (flag) {
-                this.setYRot((float) (Mth.atan2(-d5, -d1) * (double) (180F / (float) Math.PI)));
+                this.yRot = (float) (MathHelper.atan2(-d3, -d0) * (double) (180F / (float) Math.PI));
             } else {
-                this.setYRot((float) (Mth.atan2(d5, d1) * (double) (180F / (float) Math.PI)));
+                this.yRot = (float) (MathHelper.atan2(d3, d0) * (double) (180F / (float) Math.PI));
             }
 
-            this.setXRot((float) (Mth.atan2(d6, d4) * (double) (180F / (float) Math.PI)));
-            this.setXRot(lerpRotation(this.xRotO, this.getXRot()));
-            this.setYRot(lerpRotation(this.yRotO, this.getYRot()));
+            this.xRot = (float) (MathHelper.atan2(d4, (double) f1) * (double) (180F / (float) Math.PI));
+            this.xRot = lerpRotation(this.xRotO, this.xRot);
+            this.yRot = lerpRotation(this.yRotO, this.yRot);
             float f = 0.99F;
             if (this.isInWater()) {
-                discard();
+                remove();
             }
 
-            this.setDeltaMovement(vec3.scale(f));
+            this.setDeltaMovement(vector3d.scale(f));
             if (!this.isNoGravity() && !flag) {
-                Vec3 vec34 = this.getDeltaMovement();
+                Vector3d vec34 = this.getDeltaMovement();
                 this.setDeltaMovement(vec34.x, vec34.y - (double) 0.05F, vec34.z);
             }
 
-            this.setPos(d7, d2, d3);
+            this.setPos(d5, d1, d2);
             this.checkInsideBlocks();
         }
     }
@@ -217,7 +211,7 @@ public class CrossbowArrowPreview extends Entity implements PreviewEntity<Abstra
             p_37274_ += 360.0F;
         }
 
-        return Mth.lerp(0.2F, p_37274_, p_37275_);
+        return MathHelper.lerp(0.2F, p_37274_, p_37275_);
     }
 
     @Override
@@ -226,22 +220,22 @@ public class CrossbowArrowPreview extends Entity implements PreviewEntity<Abstra
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag p_20052_) {
+    protected void readAdditionalSaveData(CompoundNBT p_20052_) {
 
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag p_20139_) {
+    protected void addAdditionalSaveData(CompoundNBT p_20139_) {
 
     }
 
     @Override
-    public Packet<?> getAddEntityPacket() {
-        return new ClientboundAddEntityPacket(this);
+    public IPacket<?> getAddEntityPacket() {
+        return new SSpawnObjectPacket(this);
     }
 
     @Override
-    public boolean updateFluidHeightAndDoFluidPushing(TagKey<Fluid> p_204032_, double p_204033_) {
+    public boolean updateFluidHeightAndDoFluidPushing(ITag<Fluid> p_210500_1_, double p_210500_2_) {
         return false;
     }
 }

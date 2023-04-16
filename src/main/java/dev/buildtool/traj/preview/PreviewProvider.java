@@ -1,8 +1,8 @@
 package dev.buildtool.traj.preview;
 
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 
 public interface PreviewProvider {
     /**
@@ -15,5 +15,5 @@ public interface PreviewProvider {
      * @param shootable selected shootable or throwable item
      * @return entity for appropriate ammo type
      */
-    Class<? extends PreviewEntity<? extends Entity>> getPreviewEntityFor(Player player, Item shootable);
+    Class<? extends PreviewEntity<? extends Entity>> getPreviewEntityFor(PlayerEntity player, Item shootable);
 }
