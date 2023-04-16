@@ -1,3 +1,7 @@
+4.1.0-1.18.2:
+updated for minecraft 1.18.2;
+fixed water splashes caused by trajectory;
+
 4.0.0-1.18.1:
 updated for 1.18.1;
 added trajectory toggle key (H);
