@@ -3,7 +3,7 @@ plugins {
     id 'eclipse'
     id 'maven-publish'
 }
-version = '5.0.0-1.19.3'
+version = '5.0.1-1.19.3'
 group = 'dev.buildtool' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'Trajectory Preview'
 
