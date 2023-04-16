@@ -2,7 +2,7 @@
 updated to 1.19.3;
 
 4.5.1-1.19:
-fixed water particles cause by trajectory;
+fixed water particles caused by trajectory;
 
 4.5.0-1.19:
 updated to 1.19.x;
