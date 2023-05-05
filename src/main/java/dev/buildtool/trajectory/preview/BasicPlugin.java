@@ -4,6 +4,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 
+@TrajectoryPlugin
 public class BasicPlugin implements PreviewProvider {
     @Override
     public Class<? extends PreviewEntity<? extends Entity>> getPreviewEntityFor(Player player, Item shootable) {

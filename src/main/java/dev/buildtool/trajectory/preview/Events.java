@@ -1,6 +1,5 @@
 package dev.buildtool.trajectory.preview;
 
-import com.google.common.collect.ImmutableSet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleEngine;
@@ -21,14 +20,12 @@ import org.lwjgl.glfw.GLFW;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Mod.EventBusSubscriber(Dist.CLIENT)
 public class Events {
-
-    static Set<PreviewProvider> previewProviders = ImmutableSet.of(new BasicPlugin());
     static boolean render = true;
 
+    @SuppressWarnings("unchecked")
     @SubscribeEvent
     public static void drawTrajectory(RenderGuiOverlayEvent.Post event) {
         if (render) {
@@ -40,7 +37,7 @@ public class Events {
             ItemStack itemStack = player.getMainHandItem();
             Item item = itemStack.getItem();
             if (!itemStack.isEmpty()) {
-                for (PreviewProvider previewProvider : previewProviders) {
+                for (PreviewProvider previewProvider : TrajectoryPreview.previewProviders) {
                     Class<? extends PreviewEntity<?>> previewEntityClass = previewProvider.getPreviewEntityFor(player, item);
                     if (previewEntityClass != null) {
                         try {
