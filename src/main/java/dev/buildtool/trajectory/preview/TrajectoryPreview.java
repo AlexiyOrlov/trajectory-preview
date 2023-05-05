@@ -49,6 +49,6 @@ public class TrajectoryPreview {
             }
         });
         previewProviders.forEach(PreviewProvider::prepare);
-        LOGGER.info("Loaded and prepared {} plugins", previewProviders.size());
+        LOGGER.info("Loaded and prepared {} plugin(s)", previewProviders.size());
     }
 }

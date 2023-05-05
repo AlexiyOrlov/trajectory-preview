@@ -4,6 +4,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 
+/**
+ * Main plugin
+ */
 @TrajectoryPlugin
 public class BasicPlugin implements PreviewProvider {
     @Override

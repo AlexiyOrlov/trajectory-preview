@@ -12,8 +12,8 @@ public interface PreviewProvider {
     }
 
     /**
-     * @param shootable selected shootable or throwable item
-     * @return entity for appropriate ammo type
+     * @param shootable shootable or throwable item (ammo), selected in hotbar
+     * @return preview entity class for appropriate ammo type
      */
     Class<? extends PreviewEntity<? extends Entity>> getPreviewEntityFor(Player player, Item shootable);
 }

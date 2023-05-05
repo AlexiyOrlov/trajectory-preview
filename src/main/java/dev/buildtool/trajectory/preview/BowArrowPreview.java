@@ -161,12 +161,12 @@ public class BowArrowPreview extends Entity implements PreviewEntity<AbstractArr
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag p_20052_) {
+    protected void readAdditionalSaveData(CompoundTag tag) {
 
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag p_20139_) {
+    protected void addAdditionalSaveData(CompoundTag tag) {
 
     }
 
@@ -188,7 +188,7 @@ public class BowArrowPreview extends Entity implements PreviewEntity<AbstractArr
     }
 
     @Override
-    public boolean updateFluidHeightAndDoFluidPushing(TagKey<Fluid> p_204032_, double p_204033_) {
+    public boolean updateFluidHeightAndDoFluidPushing(TagKey<Fluid> fluid, double p_204033_) {
         return false;
     }
 }

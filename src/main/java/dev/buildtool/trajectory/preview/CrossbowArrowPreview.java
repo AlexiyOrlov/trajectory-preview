@@ -89,10 +89,10 @@ public class CrossbowArrowPreview extends Entity implements PreviewEntity<Abstra
         return list;
     }
 
-    private static AbstractArrow getArrow(Level p_40915_, LivingEntity p_40916_, ItemStack crossbow, ItemStack arrows) {
+    private static AbstractArrow getArrow(Level level, LivingEntity livingEntity, ItemStack crossbow, ItemStack arrows) {
         ArrowItem arrowitem = (ArrowItem) (arrows.getItem() instanceof ArrowItem ? arrows.getItem() : Items.ARROW);
-        AbstractArrow abstractarrow = arrowitem.createArrow(p_40915_, arrows, p_40916_);
-        if (p_40916_ instanceof Player) {
+        AbstractArrow abstractarrow = arrowitem.createArrow(level, arrows, livingEntity);
+        if (livingEntity instanceof Player) {
             abstractarrow.setCritArrow(true);
         }
 
@@ -228,12 +228,12 @@ public class CrossbowArrowPreview extends Entity implements PreviewEntity<Abstra
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag p_20052_) {
+    protected void readAdditionalSaveData(CompoundTag tag) {
 
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag p_20139_) {
+    protected void addAdditionalSaveData(CompoundTag tag) {
 
     }
 
@@ -243,7 +243,7 @@ public class CrossbowArrowPreview extends Entity implements PreviewEntity<Abstra
     }
 
     @Override
-    public boolean updateFluidHeightAndDoFluidPushing(TagKey<Fluid> p_204032_, double p_204033_) {
+    public boolean updateFluidHeightAndDoFluidPushing(TagKey<Fluid> fluid, double p_204033_) {
         return false;
     }
 }

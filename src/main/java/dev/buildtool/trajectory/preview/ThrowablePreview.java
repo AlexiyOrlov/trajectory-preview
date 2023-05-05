@@ -22,9 +22,12 @@ import net.minecraft.world.phys.Vec3;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * A preview for snowballs, eggs, ender pearls, experience bottles and potions
+ */
 public class ThrowablePreview extends Entity implements PreviewEntity<ThrowableItemProjectile> {
-    public ThrowablePreview(Level p_19871_) {
-        super(EntityType.SNOWBALL, p_19871_);
+    public ThrowablePreview(Level level) {
+        super(EntityType.SNOWBALL, level);
     }
 
     @Override
@@ -97,12 +100,12 @@ public class ThrowablePreview extends Entity implements PreviewEntity<ThrowableI
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag p_20052_) {
+    protected void readAdditionalSaveData(CompoundTag tag) {
 
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag p_20139_) {
+    protected void addAdditionalSaveData(CompoundTag tag) {
 
     }
 
@@ -120,7 +123,7 @@ public class ThrowablePreview extends Entity implements PreviewEntity<ThrowableI
     }
 
     @Override
-    public boolean updateFluidHeightAndDoFluidPushing(TagKey<Fluid> p_204032_, double p_204033_) {
+    public boolean updateFluidHeightAndDoFluidPushing(TagKey<Fluid> fluid, double p_204033_) {
         return false;
     }
 }
