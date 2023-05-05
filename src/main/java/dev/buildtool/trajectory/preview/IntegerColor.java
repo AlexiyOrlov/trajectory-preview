@@ -1,4 +1,4 @@
-package dev.buildtool.traj.preview;
+package dev.buildtool.trajectory.preview;
 
 /**
  * For some reason color in minecraft is encoded in A-R-G-B order, not R-G-B-A.

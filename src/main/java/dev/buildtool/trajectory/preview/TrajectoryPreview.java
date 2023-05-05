@@ -1,4 +1,4 @@
-package dev.buildtool.traj.preview;
+package dev.buildtool.trajectory.preview;
 
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.ModLoadingContext;

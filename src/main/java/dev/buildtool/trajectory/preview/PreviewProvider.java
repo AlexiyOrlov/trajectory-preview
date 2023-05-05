@@ -1,4 +1,4 @@
-package dev.buildtool.traj.preview;
+package dev.buildtool.trajectory.preview;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;

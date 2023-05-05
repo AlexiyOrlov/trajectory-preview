@@ -1,4 +1,4 @@
-package dev.buildtool.traj.preview;
+package dev.buildtool.trajectory.preview;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;

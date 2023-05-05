@@ -1,4 +1,4 @@
-package dev.buildtool.traj.preview;
+package dev.buildtool.trajectory.preview;
 
 import com.google.common.collect.ImmutableSet;
 import net.minecraft.client.Minecraft;

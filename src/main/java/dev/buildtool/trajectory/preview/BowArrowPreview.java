@@ -1,28 +1,19 @@
-package dev.buildtool.traj.preview;
+package dev.buildtool.trajectory.preview;
 
-import com.google.common.collect.Lists;
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
-import net.minecraft.world.item.ArrowItem;
-import net.minecraft.world.item.CrossbowItem;
+import net.minecraft.world.entity.projectile.Arrow;
+import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -34,76 +25,30 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-public class CrossbowArrowPreview extends Entity implements PreviewEntity<AbstractArrow> {
+public class BowArrowPreview extends Entity implements PreviewEntity<AbstractArrow> {
     private boolean inGround;
 
-    public CrossbowArrowPreview(Level level) {
+    public BowArrowPreview(Level level) {
         super(EntityType.ARROW, level);
     }
 
     @Override
     public List<AbstractArrow> initializeEntities(Player player, ItemStack associatedItem) {
-        if (associatedItem.getItem() instanceof CrossbowItem) {
-            if (CrossbowItem.isCharged(associatedItem)) {
-                List<ItemStack> chargedArrows = getChargedProjectiles(associatedItem);
-                if (chargedArrows.size() > 0) {
-                    List<AbstractArrow> arrows = new ArrayList<>(chargedArrows.size());
-                    for (int i = 0; i < chargedArrows.size(); i++) {
-                        AbstractArrow arrow = getArrow(level, player, associatedItem, chargedArrows.get(i));
-                        Vec3 vec31 = player.getUpVector(1.0F);
-                        Quaternion quaternion;
-                        if (i == 0) {
-                            quaternion = new Quaternion(new Vector3f(vec31), 0, true);
-                        } else if (i == 1) {
-                            quaternion = new Quaternion(new Vector3f(vec31), -10, true);
-                        } else {
-                            quaternion = new Quaternion(new Vector3f(vec31), 10, true);
-                        }
-                        Vec3 vector3 = player.getViewVector(1);
-                        Vector3f vector3f = new Vector3f(vector3);
-                        vector3f.transform(quaternion);
-                        arrow.shoot(vector3f.x(), vector3f.y(), vector3f.z(), 3.15f, 0);
-                        arrows.add(arrow);
-                    }
-                    return arrows;
-                }
+        int timeLeft = player.getUseItemRemainingTicks();
+        if (timeLeft > 0) {
+            int maxDuration = player.getMainHandItem().getUseDuration();
+            int difference = maxDuration - timeLeft;
+            float arrowVelocity = BowItem.getPowerForTime(difference);
+            if (arrowVelocity >= 0.1) {
+                Arrow arrow = new Arrow(level, player);
+                arrow.shootFromRotation(player, player.getXRot(), player.getYRot(), 0, 3 * arrowVelocity, 0);
+                return Collections.singletonList(arrow);
             }
         }
         return null;
-    }
-
-    private static List<ItemStack> getChargedProjectiles(ItemStack p_40942_) {
-        List<ItemStack> list = Lists.newArrayList();
-        CompoundTag compoundtag = p_40942_.getTag();
-        if (compoundtag != null && compoundtag.contains("ChargedProjectiles", 9)) {
-            ListTag listtag = compoundtag.getList("ChargedProjectiles", 10);
-            for (int i = 0; i < listtag.size(); ++i) {
-                CompoundTag compoundtag1 = listtag.getCompound(i);
-                list.add(ItemStack.of(compoundtag1));
-            }
-        }
-
-        return list;
-    }
-
-    private static AbstractArrow getArrow(Level p_40915_, LivingEntity p_40916_, ItemStack crossbow, ItemStack arrows) {
-        ArrowItem arrowitem = (ArrowItem) (arrows.getItem() instanceof ArrowItem ? arrows.getItem() : Items.ARROW);
-        AbstractArrow abstractarrow = arrowitem.createArrow(p_40915_, arrows, p_40916_);
-        if (p_40916_ instanceof Player) {
-            abstractarrow.setCritArrow(true);
-        }
-
-        abstractarrow.setSoundEvent(SoundEvents.CROSSBOW_HIT);
-        abstractarrow.setShotFromCrossbow(true);
-        int i = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.PIERCING, crossbow);
-        if (i > 0) {
-            abstractarrow.setPierceLevel((byte) i);
-        }
-
-        return abstractarrow;
     }
 
     @Override
@@ -210,18 +155,6 @@ public class CrossbowArrowPreview extends Entity implements PreviewEntity<Abstra
         }
     }
 
-    protected static float lerpRotation(float p_37274_, float p_37275_) {
-        while (p_37275_ - p_37274_ < -180.0F) {
-            p_37274_ -= 360.0F;
-        }
-
-        while (p_37275_ - p_37274_ >= 180.0F) {
-            p_37274_ += 360.0F;
-        }
-
-        return Mth.lerp(0.2F, p_37274_, p_37275_);
-    }
-
     @Override
     protected void defineSynchedData() {
 
@@ -240,6 +173,18 @@ public class CrossbowArrowPreview extends Entity implements PreviewEntity<Abstra
     @Override
     public Packet<ClientGamePacketListener> getAddEntityPacket() {
         return new ClientboundAddEntityPacket(this);
+    }
+
+    protected static float lerpRotation(float p_37274_, float p_37275_) {
+        while (p_37275_ - p_37274_ < -180.0F) {
+            p_37274_ -= 360.0F;
+        }
+
+        while (p_37275_ - p_37274_ >= 180.0F) {
+            p_37274_ += 360.0F;
+        }
+
+        return Mth.lerp(0.2F, p_37274_, p_37275_);
     }
 
     @Override
