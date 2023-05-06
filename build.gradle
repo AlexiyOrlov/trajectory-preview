@@ -70,13 +70,7 @@ minecraft {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
-    // Put repositories for dependencies here
-    // ForgeGradle automatically adds the Forge maven and Maven Central for you
 
-    // If you have mod jar dependencies in ./libs, you can declare them as a repository like so:
-    // flatDir {
-    //     dir 'libs'
-    // }
 }
 
 dependencies {
@@ -105,7 +99,7 @@ jar {
 // This is the preferred method to reobfuscate your jar file
 jar.finalizedBy('reobfJar')
 // However if you are in a multi-project build, dev time needs unobfed jar files, so you can delay the obfuscation until publishing by doing
-// publish.dependsOn('reobfJar')
+//publish.dependsOn('reobfJar')
 
 publishing {
     publications {
@@ -116,6 +110,39 @@ publishing {
     repositories {
         maven {
             url "file://${project.projectDir}/mcmodsrepo"
+        }
+    }
+}
+
+tasks.register('api', Jar) {
+    setArchiveClassifier('api')
+    from sourceSets.main.allSource
+    from sourceSets.main.output
+    include('dev/buildtool/trajectory/preview/api/**')
+}
+
+tasks.register('sources', Jar) {
+    setArchiveClassifier('sources')
+    from sourceSets.main.allSource
+}
+
+tasks.register("jarUnobf", Jar) {
+    setArchiveClassifier('unobf')
+    from sourceSets.main.output
+}
+
+publishing {
+    publications {
+        trajectoryPreview(MavenPublication) {
+            artifact sources
+            artifact api
+            artifact jarUnobf
+        }
+    }
+    repositories {
+        maven {
+            name = 'MyMaven'
+            url = property("myMavenUrl")
         }
     }
 }
