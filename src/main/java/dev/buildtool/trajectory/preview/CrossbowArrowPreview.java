@@ -3,6 +3,7 @@ package dev.buildtool.trajectory.preview;
 import com.google.common.collect.Lists;
 import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
+import dev.buildtool.trajectory.preview.api.PreviewEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;

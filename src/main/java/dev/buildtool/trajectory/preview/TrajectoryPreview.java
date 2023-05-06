@@ -1,5 +1,7 @@
 package dev.buildtool.trajectory.preview;
 
+import dev.buildtool.trajectory.preview.api.PreviewProvider;
+import dev.buildtool.trajectory.preview.api.TrajectoryPlugin;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;

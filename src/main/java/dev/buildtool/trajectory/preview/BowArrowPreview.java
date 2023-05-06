@@ -1,5 +1,6 @@
 package dev.buildtool.trajectory.preview;
 
+import dev.buildtool.trajectory.preview.api.PreviewEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;

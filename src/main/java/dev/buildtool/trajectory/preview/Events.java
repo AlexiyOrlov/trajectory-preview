@@ -1,5 +1,7 @@
 package dev.buildtool.trajectory.preview;
 
+import dev.buildtool.trajectory.preview.api.PreviewEntity;
+import dev.buildtool.trajectory.preview.api.PreviewProvider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleEngine;

@@ -1,5 +1,8 @@
 package dev.buildtool.trajectory.preview;
 
+import dev.buildtool.trajectory.preview.api.PreviewEntity;
+import dev.buildtool.trajectory.preview.api.PreviewProvider;
+import dev.buildtool.trajectory.preview.api.TrajectoryPlugin;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
