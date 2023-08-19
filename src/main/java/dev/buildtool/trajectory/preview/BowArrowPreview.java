@@ -44,7 +44,7 @@ public class BowArrowPreview extends Entity implements PreviewEntity<AbstractArr
             int difference = maxDuration - timeLeft;
             float arrowVelocity = BowItem.getPowerForTime(difference);
             if (arrowVelocity >= 0.1) {
-                Arrow arrow = new Arrow(level, player);
+                Arrow arrow = new Arrow(level(), player);
                 arrow.shootFromRotation(player, player.getXRot(), player.getYRot(), 0, 3 * arrowVelocity, 0);
                 return Collections.singletonList(arrow);
             }
@@ -66,9 +66,9 @@ public class BowArrowPreview extends Entity implements PreviewEntity<AbstractArr
         }
 
         BlockPos blockpos = this.blockPosition();
-        BlockState blockstate = this.level.getBlockState(blockpos);
+        BlockState blockstate = this.level().getBlockState(blockpos);
         if (!blockstate.isAir() && !flag) {
-            VoxelShape voxelshape = blockstate.getCollisionShape(this.level, blockpos);
+            VoxelShape voxelshape = blockstate.getCollisionShape(this.level(), blockpos);
             if (!voxelshape.isEmpty()) {
                 Vec3 vec31 = this.position();
 
@@ -90,7 +90,7 @@ public class BowArrowPreview extends Entity implements PreviewEntity<AbstractArr
         } else {
             Vec3 vec32 = this.position();
             Vec3 vec33 = vec32.add(vec3);
-            HitResult hitresult = this.level.clip(new ClipContext(vec32, vec33, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
+            HitResult hitresult = this.level().clip(new ClipContext(vec32, vec33, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
             if (hitresult.getType() != HitResult.Type.MISS) {
                 vec33 = hitresult.getLocation();
             }

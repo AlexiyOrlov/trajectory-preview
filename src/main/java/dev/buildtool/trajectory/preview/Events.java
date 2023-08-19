@@ -35,7 +35,7 @@ public class Events {
             ParticleEngine particleEngine = minecraft.particleEngine;
             Player player = minecraft.player;
             assert player != null;
-            Level level = player.level;
+            Level level = player.level();
             ItemStack itemStack = player.getMainHandItem();
             Item item = itemStack.getItem();
             if (!itemStack.isEmpty()) {

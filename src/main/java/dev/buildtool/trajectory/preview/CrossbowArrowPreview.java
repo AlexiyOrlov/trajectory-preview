@@ -1,8 +1,6 @@
 package dev.buildtool.trajectory.preview;
 
 import com.google.common.collect.Lists;
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
 import dev.buildtool.trajectory.preview.api.PreviewEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -34,6 +32,8 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,19 +53,18 @@ public class CrossbowArrowPreview extends Entity implements PreviewEntity<Abstra
                 if (chargedArrows.size() > 0) {
                     List<AbstractArrow> arrows = new ArrayList<>(chargedArrows.size());
                     for (int i = 0; i < chargedArrows.size(); i++) {
-                        AbstractArrow arrow = getArrow(level, player, associatedItem, chargedArrows.get(i));
+                        AbstractArrow arrow = getArrow(level(), player, associatedItem, chargedArrows.get(i));
                         Vec3 vec31 = player.getUpVector(1.0F);
-                        Quaternion quaternion;
+                        Quaternionf quaternion;
                         if (i == 0) {
-                            quaternion = new Quaternion(new Vector3f(vec31), 0, true);
+                            quaternion = new Quaternionf().setAngleAxis(0, vec31.x, vec31.y, vec31.z);
                         } else if (i == 1) {
-                            quaternion = new Quaternion(new Vector3f(vec31), -10, true);
+                            quaternion = new Quaternionf().setAngleAxis(-10 * (Math.PI / 180F), vec31.x, vec31.y, vec31.z);
                         } else {
-                            quaternion = new Quaternion(new Vector3f(vec31), 10, true);
+                            quaternion = new Quaternionf().setAngleAxis(10 * (Math.PI / 180F), vec31.x, vec31.y, vec31.z);
                         }
                         Vec3 vector3 = player.getViewVector(1);
-                        Vector3f vector3f = new Vector3f(vector3);
-                        vector3f.transform(quaternion);
+                        Vector3f vector3f = vector3.toVector3f().rotate(quaternion);
                         arrow.shoot(vector3f.x(), vector3f.y(), vector3f.z(), 3.15f, 0);
                         arrows.add(arrow);
                     }
@@ -121,9 +120,9 @@ public class CrossbowArrowPreview extends Entity implements PreviewEntity<Abstra
         }
 
         BlockPos blockpos = this.blockPosition();
-        BlockState blockstate = this.level.getBlockState(blockpos);
+        BlockState blockstate = this.level().getBlockState(blockpos);
         if (!blockstate.isAir() && !flag) {
-            VoxelShape voxelshape = blockstate.getCollisionShape(this.level, blockpos);
+            VoxelShape voxelshape = blockstate.getCollisionShape(this.level(), blockpos);
             if (!voxelshape.isEmpty()) {
                 Vec3 vec31 = this.position();
 
@@ -145,7 +144,7 @@ public class CrossbowArrowPreview extends Entity implements PreviewEntity<Abstra
         } else {
             Vec3 vec32 = this.position();
             Vec3 vec33 = vec32.add(vec3);
-            HitResult hitresult = this.level.clip(new ClipContext(vec32, vec33, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
+            HitResult hitresult = this.level().clip(new ClipContext(vec32, vec33, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
             if (hitresult.getType() != HitResult.Type.MISS) {
                 vec33 = hitresult.getLocation();
             }

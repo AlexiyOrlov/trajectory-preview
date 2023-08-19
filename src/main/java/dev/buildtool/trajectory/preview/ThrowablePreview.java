@@ -35,23 +35,23 @@ public class ThrowablePreview extends Entity implements PreviewEntity<ThrowableI
     public List<ThrowableItemProjectile> initializeEntities(Player player, ItemStack associatedItem) {
         Item item = associatedItem.getItem();
         if (item instanceof SnowballItem) {
-            Snowball snowball = new Snowball(level, player);
+            Snowball snowball = new Snowball(level(), player);
             snowball.shootFromRotation(player, player.getXRot(), player.getYRot(), 0, 1.5f, 0);
             return Collections.singletonList(snowball);
         } else if (item instanceof EggItem) {
-            ThrownEgg egg = new ThrownEgg(level, player);
+            ThrownEgg egg = new ThrownEgg(level(), player);
             egg.shootFromRotation(player, player.getXRot(), player.getYRot(), 0, 1.5f, 0);
             return Collections.singletonList(egg);
         } else if (item instanceof EnderpearlItem) {
-            ThrownEnderpearl thrownEnderpearl = new ThrownEnderpearl(level, player);
+            ThrownEnderpearl thrownEnderpearl = new ThrownEnderpearl(level(), player);
             thrownEnderpearl.shootFromRotation(player, player.getXRot(), player.getYRot(), 0, 1.5f, 0);
             return Collections.singletonList(thrownEnderpearl);
         } else if (item instanceof SplashPotionItem || item instanceof LingeringPotionItem) {
-            ThrownPotion thrownPotion = new ThrownPotion(level, player);
+            ThrownPotion thrownPotion = new ThrownPotion(level(), player);
             thrownPotion.shootFromRotation(player, player.getXRot(), player.getYRot(), -20, 0.5f, 0);
             return Collections.singletonList(thrownPotion);
         } else if (item instanceof ExperienceBottleItem) {
-            ThrownExperienceBottle experienceBottle = new ThrownExperienceBottle(level, player);
+            ThrownExperienceBottle experienceBottle = new ThrownExperienceBottle(level(), player);
             experienceBottle.shootFromRotation(player, player.getXRot(), player.getYRot(), -20, 0.7f, 0);
             return Collections.singletonList(experienceBottle);
         }
@@ -61,10 +61,10 @@ public class ThrowablePreview extends Entity implements PreviewEntity<ThrowableI
     @Override
     public void simulateShot(ThrowableItemProjectile simulatedEntity) {
         super.tick();
-        HitResult hitresult = ProjectileUtil.getHitResult(this, entity -> !entity.isSpectator() && entity.isAlive() && entity.isPickable());
+        HitResult hitresult = ProjectileUtil.getHitResultOnMoveVector(this, entity -> !entity.isSpectator() && entity.isAlive() && entity.isPickable());
         if (hitresult.getType() == HitResult.Type.BLOCK) {
             BlockPos blockpos = ((BlockHitResult) hitresult).getBlockPos();
-            BlockState blockstate = this.level.getBlockState(blockpos);
+            BlockState blockstate = this.level().getBlockState(blockpos);
             if (blockstate.is(Blocks.NETHER_PORTAL)) {
                 discard();
             } else if (blockstate.is(Blocks.END_GATEWAY)) {

@@ -25,7 +25,7 @@ public class TridentPreview extends BowArrowPreview {
                 int maxDuration = player.getMainHandItem().getUseDuration();
                 int difference = maxDuration - timeLeft;
                 if (difference >= 10) {
-                    ThrownTrident trident = new ThrownTrident(level, player, associatedItem);
+                    ThrownTrident trident = new ThrownTrident(level(), player, associatedItem);
                     trident.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 2.5F + EnchantmentHelper.getRiptide(associatedItem) * 0.5F, 0);
                     return Collections.singletonList(trident);
                 }
