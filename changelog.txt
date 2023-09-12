@@ -1,4 +1,7 @@
-6.0.0-1.20.1
+6.0.1-1.20.1:
+fixed freeze caused by crossbow with Piercing being aimed at a mob;
+
+6.0.0-1.20.1:
 updated;
 
 5.0.0-1.19.3:

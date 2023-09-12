@@ -5,7 +5,7 @@ plugins {
     id 'net.minecraftforge.gradle' version '[6.0,6.2)'
 }
 
-version = '6.0.0-1.20.1'
+version = '6.0.1-1.20.1'
 group = 'dev.buildtool' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'Trajectory Preview'
 
