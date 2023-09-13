@@ -1,3 +1,6 @@
+6.0.2-1.20.1:
+reduced visual lag;
+
 6.0.1-1.20.1:
 fixed freeze caused by crossbow with Piercing being aimed at a mob;
 
