@@ -26,6 +26,7 @@ import java.util.List;
 @Mod.EventBusSubscriber(Dist.CLIENT)
 public class Events {
     static boolean render = true;
+    static int counter;
 
     @SuppressWarnings("unchecked")
     @SubscribeEvent
@@ -38,7 +39,7 @@ public class Events {
             Level level = player.level;
             ItemStack itemStack = player.getMainHandItem();
             Item item = itemStack.getItem();
-            if (!itemStack.isEmpty()) {
+            if (!itemStack.isEmpty() && counter == 0) {
                 for (PreviewProvider previewProvider : TrajectoryPreview.previewProviders) {
                     Class<? extends PreviewEntity<?>> previewEntityClass = previewProvider.getPreviewEntityFor(player, item);
                     if (previewEntityClass != null) {
@@ -96,6 +97,9 @@ public class Events {
 
                 }
             }
+            counter++;
+            if (counter >= 60)
+                counter = 0;
         }
     }
 
