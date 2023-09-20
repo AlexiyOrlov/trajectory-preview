@@ -22,8 +22,6 @@ import net.minecraft.world.item.ArrowItem;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -96,14 +94,8 @@ public class CrossbowArrowPreview extends Entity implements PreviewEntity<Abstra
         if (livingEntity instanceof Player) {
             abstractarrow.setCritArrow(true);
         }
-
         abstractarrow.setSoundEvent(SoundEvents.CROSSBOW_HIT);
         abstractarrow.setShotFromCrossbow(true);
-        int i = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.PIERCING, crossbow);
-        if (i > 0) {
-            abstractarrow.setPierceLevel((byte) i);
-        }
-
         return abstractarrow;
     }
 
