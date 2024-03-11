@@ -1,3 +1,6 @@
+6.0.3:
+do preview for offhand item;
+
 6.0.2-1.20.1:
 reduced visual lag;
 
