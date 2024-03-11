@@ -7,8 +7,8 @@ import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -37,17 +37,19 @@ public class Events {
             Player player = minecraft.player;
             assert player != null;
             Level level = player.level();
-            drawPreview(player.getMainHandItem(), player, player.getMainHandItem().getItem(), level, particleEngine);
+            drawPreview(player, level, particleEngine, EquipmentSlot.MAINHAND);
+            drawPreview(player, level, particleEngine, EquipmentSlot.MAINHAND);
             counter++;
             if (counter >= 60)
                 counter = 0;
         }
     }
 
-    private static void drawPreview(ItemStack itemStack, Player player, Item item, Level level, ParticleEngine particleEngine) {
+    private static void drawPreview(Player player, Level level, ParticleEngine particleEngine, EquipmentSlot hand) {
+        ItemStack itemStack = player.getItemBySlot(hand);
         if (!itemStack.isEmpty() && counter == 0) {
             for (PreviewProvider previewProvider : TrajectoryPreview.previewProviders) {
-                Class<? extends PreviewEntity<?>> previewEntityClass = previewProvider.getPreviewEntityFor(player, item);
+                Class<? extends PreviewEntity<?>> previewEntityClass = previewProvider.getPreviewEntityFor(player, itemStack.getItem());
                 if (previewEntityClass != null) {
                     try {
                         PreviewEntity<Entity> previewEntity = (PreviewEntity<Entity>) previewEntityClass.getConstructor(Level.class).newInstance(level);
