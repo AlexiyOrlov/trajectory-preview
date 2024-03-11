@@ -38,7 +38,7 @@ public class Events {
             assert player != null;
             Level level = player.level();
             drawPreview(player, level, particleEngine, EquipmentSlot.MAINHAND);
-            drawPreview(player, level, particleEngine, EquipmentSlot.MAINHAND);
+            drawPreview(player, level, particleEngine, EquipmentSlot.OFFHAND);
             counter++;
             if (counter >= 60)
                 counter = 0;
