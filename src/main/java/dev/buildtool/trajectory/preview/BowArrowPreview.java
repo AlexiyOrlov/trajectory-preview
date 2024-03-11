@@ -38,15 +38,17 @@ public class BowArrowPreview extends Entity implements PreviewEntity<AbstractArr
 
     @Override
     public List<AbstractArrow> initializeEntities(Player player, ItemStack associatedItem) {
-        int timeLeft = player.getUseItemRemainingTicks();
-        if (timeLeft > 0) {
-            int maxDuration = player.getMainHandItem().getUseDuration();
-            int difference = maxDuration - timeLeft;
-            float arrowVelocity = BowItem.getPowerForTime(difference);
-            if (arrowVelocity >= 0.1) {
-                Arrow arrow = new Arrow(level(), player);
-                arrow.shootFromRotation(player, player.getXRot(), player.getYRot(), 0, 3 * arrowVelocity, 0);
-                return Collections.singletonList(arrow);
+        if (associatedItem.getItem() instanceof BowItem) {
+            int timeLeft = player.getUseItemRemainingTicks();
+            if (timeLeft > 0) {
+                int maxDuration = player.getMainHandItem().getUseDuration();
+                int difference = maxDuration - timeLeft;
+                float arrowVelocity = BowItem.getPowerForTime(difference);
+                if (arrowVelocity >= 0.1) {
+                    Arrow arrow = new Arrow(level(), player);
+                    arrow.shootFromRotation(player, player.getXRot(), player.getYRot(), 0, 3 * arrowVelocity, 0);
+                    return Collections.singletonList(arrow);
+                }
             }
         }
         return null;
