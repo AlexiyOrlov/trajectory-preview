@@ -53,7 +53,7 @@ public class Events {
                 if (previewEntityClass != null) {
                     try {
                         PreviewEntity<Entity> previewEntity = (PreviewEntity<Entity>) previewEntityClass.getConstructor(Level.class).newInstance(level);
-                        List<Entity> targets = previewEntity.initializeEntities(player, itemStack);
+                        List<Entity> targets = previewEntity.initializeEntities(player, itemStack, hand);
                         if (targets != null) {
                             for (Entity target : targets) {
                                 previewEntity = (PreviewEntity<Entity>) previewEntityClass.getConstructor(Level.class).newInstance(level);

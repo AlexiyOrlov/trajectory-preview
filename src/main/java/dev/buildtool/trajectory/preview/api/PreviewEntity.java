@@ -3,6 +3,7 @@ package dev.buildtool.trajectory.preview.api;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
@@ -23,9 +24,10 @@ public interface PreviewEntity<E extends Entity> {
      * Called before simulation; create target entities here. Do not spawn any into world
      *
      * @param associatedItem item held in main hand
+     * @param hand
      * @return entities to be projected
      */
-    List<E> initializeEntities(Player player, ItemStack associatedItem);
+    List<E> initializeEntities(Player player, ItemStack associatedItem, EquipmentSlot hand);
 
     /**
      * Simulate a projected entity's tick here - generally, copy-paste relevant code from {@link Entity#tick()} method.

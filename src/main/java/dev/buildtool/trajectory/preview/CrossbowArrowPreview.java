@@ -13,6 +13,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
@@ -44,11 +45,11 @@ public class CrossbowArrowPreview extends Entity implements PreviewEntity<Abstra
     }
 
     @Override
-    public List<AbstractArrow> initializeEntities(Player player, ItemStack associatedItem) {
+    public List<AbstractArrow> initializeEntities(Player player, ItemStack associatedItem, EquipmentSlot hand) {
         if (associatedItem.getItem() instanceof CrossbowItem) {
             if (CrossbowItem.isCharged(associatedItem)) {
                 List<ItemStack> chargedArrows = getChargedProjectiles(associatedItem);
-                if (chargedArrows.size() > 0) {
+                if (!chargedArrows.isEmpty()) {
                     List<AbstractArrow> arrows = new ArrayList<>(chargedArrows.size());
                     for (int i = 0; i < chargedArrows.size(); i++) {
                         AbstractArrow arrow = getArrow(level(), player, associatedItem, chargedArrows.get(i));

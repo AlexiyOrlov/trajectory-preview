@@ -10,6 +10,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Arrow;
@@ -37,11 +38,15 @@ public class BowArrowPreview extends Entity implements PreviewEntity<AbstractArr
     }
 
     @Override
-    public List<AbstractArrow> initializeEntities(Player player, ItemStack associatedItem) {
+    public List<AbstractArrow> initializeEntities(Player player, ItemStack associatedItem, EquipmentSlot hand) {
         if (associatedItem.getItem() instanceof BowItem) {
             int timeLeft = player.getUseItemRemainingTicks();
             if (timeLeft > 0) {
-                int maxDuration = player.getMainHandItem().getUseDuration();
+                int maxDuration = 0;
+                if (hand == EquipmentSlot.MAINHAND)
+                    maxDuration = player.getMainHandItem().getUseDuration();
+                else
+                    maxDuration = player.getOffhandItem().getUseDuration();
                 int difference = maxDuration - timeLeft;
                 float arrowVelocity = BowItem.getPowerForTime(difference);
                 if (arrowVelocity >= 0.1) {

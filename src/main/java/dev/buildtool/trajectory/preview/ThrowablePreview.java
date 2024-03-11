@@ -9,6 +9,7 @@ import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.*;
 import net.minecraft.world.item.*;
@@ -32,7 +33,7 @@ public class ThrowablePreview extends Entity implements PreviewEntity<ThrowableI
     }
 
     @Override
-    public List<ThrowableItemProjectile> initializeEntities(Player player, ItemStack associatedItem) {
+    public List<ThrowableItemProjectile> initializeEntities(Player player, ItemStack associatedItem, EquipmentSlot hand) {
         Item item = associatedItem.getItem();
         if (item instanceof SnowballItem) {
             Snowball snowball = new Snowball(level(), player);

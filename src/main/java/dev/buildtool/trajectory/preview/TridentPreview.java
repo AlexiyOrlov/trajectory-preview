@@ -1,5 +1,6 @@
 package dev.buildtool.trajectory.preview;
 
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.ThrownTrident;
@@ -18,11 +19,15 @@ public class TridentPreview extends BowArrowPreview {
     }
 
     @Override
-    public List<AbstractArrow> initializeEntities(Player player, ItemStack associatedItem) {
+    public List<AbstractArrow> initializeEntities(Player player, ItemStack associatedItem, EquipmentSlot hand) {
         if (associatedItem.getItem() instanceof TridentItem) {
             int timeLeft = player.getUseItemRemainingTicks();
             if (timeLeft > 0) {
-                int maxDuration = player.getMainHandItem().getUseDuration();
+                int maxDuration = 0;
+                if (hand == EquipmentSlot.MAINHAND)
+                    maxDuration = player.getMainHandItem().getUseDuration();
+                else
+                    maxDuration = player.getOffhandItem().getUseDuration();
                 int difference = maxDuration - timeLeft;
                 if (difference >= 10) {
                     ThrownTrident trident = new ThrownTrident(level(), player, associatedItem);
