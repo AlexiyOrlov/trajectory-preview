@@ -37,9 +37,7 @@ public class Events {
             Player player = minecraft.player;
             assert player != null;
             Level level = player.level();
-            ItemStack itemStack = player.getMainHandItem();
-            Item item = itemStack.getItem();
-            drawPreview(itemStack, player, item, level, particleEngine);
+            drawPreview(player.getMainHandItem(), player, player.getMainHandItem().getItem(), level, particleEngine);
             counter++;
             if (counter >= 60)
                 counter = 0;
